@@ -1,0 +1,57 @@
+#!/usr/bin/env bash 
+set -u
+
+source /usr/share/yunohost/helpers
+
+remove_systemd_service_() {
+  local service_name=$1
+  local service_file=$2
+
+  sudo systemctl stop $service_name
+  sudo systemctl disable $service_name
+  sudo rm $service_file
+  sudo systemctl daemon-reload
+  sudo systemctl reset-failed
+}
+
+remove_nginx_config() {
+  local nginx_config_file=$1
+
+  sudo rm -rf $nginx_config_file
+  sudo service nginx reload
+}
+
+remove_user_data() {
+  local user_zeronet_dir=$1
+
+  sudo rm -rf $user_zeronet_dir
+}
+
+remove_zeronet() {
+  local deploy_path=$1
+  local symlink_to_deploy_path=$2
+
+  sudo rm -rf $deploy_path
+  sudo rm -rf $symlink_to_deploy_path
+}
+
+main() {
+  local app=${YNH_APP_INSTANCE_NAME}
+  local domain=$( ynh_app_setting_get $app domain )
+  local user=$( ynh_app_setting_get $app admin )
+  local nginx_config_file=$( ynh_app_setting_get $app nginx_config_file )
+  local systemd_service_name=$( ynh_app_setting_get $app systemd_service_name )
+  local systemd_service_file=$( ynh_app_setting_get $app systemd_service_file )
+  local deploy_path=$( ynh_app_setting_get $app deploy_path )
+  local symlink_to_deploy_path=$( ynh_app_setting_get $app symlink_to_deploy_path )
+  local user_zeronet_dir=$( ynh_app_setting_get $app user_zeronet_dir )
+
+  if [ -n $domain ]; then
+    remove_nginx_config $nginx_config_file
+    remove_user_data $user_zeronet_dir
+    remove_systemd_service_ $systemd_service_name $systemd_service_file
+    remove_zeronet $deploy_path $symlink_to_deploy_path
+  fi
+}
+
+main

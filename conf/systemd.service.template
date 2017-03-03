@@ -1,0 +1,14 @@
+[Unit]
+Description=ZeroNet for USER
+After=network.target
+
+[Service]
+User=USER
+ExecStart=/usr/bin/python2 ./zeronet.py --ui_port UI_PORT --data_dir DATA_DIR --log_dir LOG_DIR
+WorkingDirectory=WORKING_DIRECTORY
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

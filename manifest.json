@@ -1,0 +1,45 @@
+{
+  "name": "ZeroNet",
+  "id": "zeronet",
+  "packaging_format": 1,
+  "description": {
+    "en": "Decentralized websites using Bitcoin crypto and BitTorrent network",
+    "fr": "Decentralized websites using Bitcoin crypto and BitTorrent network"
+  },
+  "url": "https://zeronet.io",
+  "license": "free",
+  "version": "0.5.2",
+  "maintainer": {
+    "name": "whypsi",
+    "email": "whypsi@riseup.net"
+  },
+  "requirements": {
+    "yunohost": ">> 2.4.0"
+  },
+  "multi_instance": true,
+  "services": [
+    "nginx"
+    ],
+    "arguments": {
+      "install" : [
+        {
+          "name": "domain",
+          "type": "domain",
+          "ask": {
+            "en": "Choose a sub domain name for ynhexample",
+            "fr": "Choisissez un nom de domaine pour ynhexample"
+          },
+          "example": "zeronet.domain.tld"
+        },
+        {
+          "name": "admin",
+          "type": "user",
+          "ask": {
+            "en": "Choose an admin user (the one who will be able to access the admin interface)",
+            "fr": "Choisissez l'administrateur (seul autorisé à accéder à l'interface d'administration)"
+          },
+          "example": "john doe"
+        }
+      ]
+    }
+}

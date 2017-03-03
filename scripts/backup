@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -eu
+
+source /usr/share/yunohost/helpers
+
+main() {
+  local app=$YNH_APP_INSTANCE_NAME
+  local backup_dir=$YNH_APP_BACKUP_DIR
+  local deploy_path=$( ynh_app_setting_get $app deploy_path )
+  local nginx_config_file=$( ynh_app_setting_get $app nginx_config_file )
+  local systemd_service_name=$( ynh_app_setting_get $app systemd_service_name )
+  local systemd_service_file=$( ynh_app_setting_get $app systemd_service_file )
+  local user_zeronet_dir=$( ynh_app_setting_get $app user_zeronet_dir )
+
+  ynh_backup $deploy_path "sources"
+  
+  sudo mkdir --parent ./conf
+  ynh_backup $nginx_config_file "conf/nginx.conf"
+  ynh_backup $systemd_service_file "conf/${systemd_service_name}"
+  ynh_backup $user_zeronet_dir "conf/.zeronet"
+}
+
+main

@@ -1,0 +1,7 @@
+location YNH_WWW_PATH {
+
+  proxy_pass http://127.0.0.1:YNH_LOCAL_PORT;
+
+  # Include SSOWAT user panel.
+  include conf.d/yunohost_panel.conf.inc;
+}
