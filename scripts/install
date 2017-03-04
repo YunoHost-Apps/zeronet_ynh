@@ -51,10 +51,9 @@ update_systemd_configuration() {
   local service_name=$3
   local service_file=$4
   local user=$5
-  local group_id=$6
-  local port=$7
-  local symlink_to_deploy_path=$8
-  local zeronet_dir=$9
+  local port=$6
+  local symlink_to_deploy_path=$7
+  local zeronet_dir=$8
 
   # create zeronet user data location
   local data_dir=$zeronet_dir/data
@@ -62,17 +61,17 @@ update_systemd_configuration() {
 
   sudo mkdir -p $data_dir 
   sudo mkdir -p $log_dir
-  sudo chown -R $user:$group_id $zeronet_dir
+  sudo chown -R $user: $zeronet_dir
 
   # configure systemd service
   sudo cp $service_template $service_file
 
-  sudo sed --in-place "s@USER@$user@g" $service_file
-  sudo sed --in-place "s@UI_PORT@$port@g" $service_file
-  sudo sed --in-place "s@APP_NAME@$app@g" $service_file
-  sudo sed --in-place "s@WORKING_DIRECTORY@$symlink_to_deploy_path@g" $service_file
-  sudo sed --in-place "s@DATA_DIR@$data_dir@g" $service_file
-  sudo sed --in-place "s@LOG_DIR@$log_dir@g" $service_file
+  sudo sed --in-place "s@__USER__@$user@g" $service_file
+  sudo sed --in-place "s@__UI_PORT__@$port@g" $service_file
+  sudo sed --in-place "s@__APP_NAME__@$app@g" $service_file
+  sudo sed --in-place "s@__WORKING_DIRECTORY__@$symlink_to_deploy_path@g" $service_file
+  sudo sed --in-place "s@__DATA_DIR__@$data_dir@g" $service_file
+  sudo sed --in-place "s@__LOG_DIR__@$log_dir@g" $service_file
 
   sudo systemctl daemon-reload
   sudo systemctl enable $service_name
@@ -103,7 +102,6 @@ main() {
   local domain=$YNH_APP_ARG_DOMAIN
   local user=$YNH_APP_ARG_ADMIN
 
-  local group_id=`id -g $user`
   local port=$( ynh_find_port 43110 ) # the port zeronet listens on
 
   local path="/"
@@ -131,23 +129,23 @@ main() {
   ynh_app_setting_set $app path $path
   ynh_app_setting_set $app url $url
   ynh_app_setting_set $app admin $user
-  ynh_app_setting_set $app group_id $group_id
   ynh_app_setting_set $app deploy_path $deploy_path
   ynh_app_setting_set $app symlink_to_deploy_path $symlink_to_deploy_path
   ynh_app_setting_set $app port $port
   ynh_app_setting_set $app installed_version $source_version
   ynh_app_setting_set $app nginx_config_file $nginx_config_file
+  ynh_app_setting_set $app user $user
   ynh_app_setting_set $app user_zeronet_dir $user_zeronet_dir
   ynh_app_setting_set $app systemd_service_name $systemd_service_name
   ynh_app_setting_set $app systemd_service_file $systemd_service_file
 
   install_dependencies
-  obtain_and_deploy_source $app_config $deploy_path $symlink_to_deploy_path
-  #mock_obtain_and_deploy_source $deploy_path $symlink_to_deploy_path
+
+  obtain_and_deploy_source $app_config $deploy_path $symlink_to_deploy_path $user
 
   update_nginx_configuration $app $nginx_config_template $nginx_config_file $path $port
   update_systemd_configuration $app $systemd_service_template $systemd_service_name $systemd_service_file \
-    $user $group_id $port $symlink_to_deploy_path $user_zeronet_dir
+    $user $port $symlink_to_deploy_path $user_zeronet_dir
 }
 
 main

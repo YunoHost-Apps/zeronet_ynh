@@ -38,23 +38,13 @@ extract_archive() {
 
   sudo mkdir --parents ${deploy_path} 
   sudo tar --extract --file=${src_file} --directory=${deploy_path} --overwrite --strip-components 1
-  sudo chown --recursive root: $deploy_path
-}
-
-mock_obtain_and_deploy_source() {
-  local deploy_path=$1
-  local symlink_to_deploy_path=$2
-  local source_file=../ZeroNet.tar.gz
-
-  extract_archive $source_file $deploy_path
-
-  sudo ln --symbolic --force $deploy_path $symlink_to_deploy_path 
 }
 
 obtain_and_deploy_source() {
   local app_config=$1
   local deploy_path=$2
   local symlink_to_deploy_path=$3
+  local user=$4
   local src_url=$(app_config_get $app_config "SOURCE_URL")
   local src_checksum=$(app_config_get $app_config "SOURCE_SUM")
   local src_file="/tmp/source.tar.gz"
@@ -64,4 +54,7 @@ obtain_and_deploy_source() {
   extract_archive $src_file $deploy_path
   
   sudo ln --symbolic --force $deploy_path $symlink_to_deploy_path 
+
+  sudo chown $user: -LR $symlink_to_deploy_path
+  sudo chown $user: -h $symlink_to_deploy_path
 }

@@ -11,7 +11,6 @@ main() {
   local systemd_service_name=$( ynh_app_setting_get $app systemd_service_name )
   local systemd_service_file=$( ynh_app_setting_get $app systemd_service_file )
   local user=$( ynh_app_setting_get $app user )
-  local group_id=$( ynh_app_setting_get $app group_id )
   local user_zeronet_dir=$( ynh_app_setting_get $app user_zeronet_dir )
 
   local url=$(ynh_app_setting_get $app url)
@@ -19,12 +18,13 @@ main() {
   sudo yunohost app checkurl $url -a $app 
 
   sudo cp -a "./sources" $deploy_path
-  sudo chown www-data:www-data $deploy_path -R
   sudo ln --symbolic --force $deploy_path $symlink_to_deploy_path 
+  sudo chown $user: -LR $symlink_to_deploy_path
+  sudo chown $user: -h $symlink_to_deploy_path
 
   sudo rm -rf $user_zeronet_dir
   sudo cp -aR "./conf/.zeronet" $user_zeronet_dir
-  sudo chown -R $user:$group_id $user_zeronet_dir
+  sudo chown -R $user: $user_zeronet_dir
   
   sudo cp -a "./conf/nginx.conf" $nginx_config_file
   sudo service nginx reload

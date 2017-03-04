@@ -6,47 +6,9 @@ set -eu
 source /usr/share/yunohost/helpers
 source functions.sh
 
-#
-# finds maximum in a sequence of numbers, # e.g. 
-# max 1 2 3 => 3
-#
-max() {
-  local m=$1
-  local other=$@
-
-  for n in $other
-  do
-    if [ $n -gt $m ]; then
-      m=$n
-    fi
-  done
-  echo $m
-}
-
-# 
-# returns true if first paramter is greater than second where
-# parameter is in "digit-dot" format, e.g.
-#
-# is_new_version_available 1.2.1 1.2.0 => true
-# is_new_version_available 1.2.1 1.2 => true
-#
-is_new_version_available() {
-  local installed=( $(echo "$1" | tr '.' ' ') )
-  local available=( $(echo "$2" | tr '.' ' ') ) 
-  local len="$(max "${#installed[*]}" "${#available[*]}")"
-
-  for ((i=0; i<len; i++))
-  do
-    [ "${installed[i]:-0}" -lt "${available[i]:-0}" ] && return 0
-    [ "${installed[i]:-0}" -gt "${available[i]:-0}" ] && return 1
-  done
-
-  # both versions are equal
-  return 1
-}
-
 main() {
   local app=${YNH_APP_INSTANCE_NAME}
+  local user=$( ynh_app_setting_get $app user )
   local deploy_path=$( ynh_app_setting_get $app deploy_path )
   local symlink_to_deploy_path=$( ynh_app_setting_get $app symlink_to_deploy_path )
   local installed_version=$( ynh_app_setting_get $app installed_version )
@@ -54,23 +16,19 @@ main() {
   local app_config=../conf/app.src 
   local source_version=$(app_config_get $app_config "SOURCE_VERSION")
 
-  # if is_new_version_available $installed_version $source_version; then
-    local old_deploy_path=$deploy_path
-    local new_deploy_path=$( make_deploy_path $app $source_version )
+  local old_deploy_path=$deploy_path
+  local new_deploy_path=$( make_deploy_path $app $source_version )
 
-    obtain_and_deploy_source $app_config $new_deploy_path $symlink_to_deploy_path
-    #mock_obtain_and_deploy_source $new_deploy_path $symlink_to_deploy_path
+  obtain_and_deploy_source $app_config $new_deploy_path $symlink_to_deploy_path $user
 
-    sudo systemctl restart $systemd_service_name
+  sudo systemctl restart $systemd_service_name
 
-    ynh_app_setting_set $app installed_version $source_version
-    ynh_app_setting_set $app deploy_path $new_deploy_path
+  ynh_app_setting_set $app installed_version $source_version
+  ynh_app_setting_set $app deploy_path $new_deploy_path
 
+  if [ $new_deploy_path != $old_deploy_path ]; then
     sudo rm -rf $old_deploy_path
-  #else
-  #  echo "There is no new version of ZeroNet, nothing to upgrade!"
-  #  ynh_die
-  #fi
+  fi
 }
 
 main
