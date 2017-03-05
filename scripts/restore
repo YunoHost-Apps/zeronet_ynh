@@ -3,6 +3,14 @@ set -eu
 
 source /usr/share/yunohost/helpers
 
+# TODO: enable with fix of https://github.com/YunoHost/yunohost/pull/246
+# source .hfunctions
+
+# TODO: remove with fix of https://github.com/YunoHost/yunohost/pull/246
+install_dependencies() {
+  sudo apt-get install --quiet --yes python-msgpack python-gevent
+}
+
 main() {
   local app=$YNH_APP_INSTANCE_NAME
   local deploy_path=$(ynh_app_setting_get $app deploy_path)
@@ -14,6 +22,8 @@ main() {
   local user_zeronet_dir=$( ynh_app_setting_get $app user_zeronet_dir )
 
   local url=$(ynh_app_setting_get $app url)
+
+  install_dependencies
 
   sudo yunohost app checkurl $url -a $app 
 

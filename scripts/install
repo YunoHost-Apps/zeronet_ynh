@@ -6,10 +6,6 @@ set -eu
 source /usr/share/yunohost/helpers
 source functions.sh
 
-install_dependencies() {
-  sudo apt-get install --yes python-msgpack python-gevent
-}
-
 nginx_config_file() {
   local app=$1
   local domain=$2

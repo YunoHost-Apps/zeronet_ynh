@@ -2,6 +2,10 @@
 
 set -eu
 
+install_dependencies() {
+  sudo apt-get install --quiet --yes python-msgpack python-gevent
+}
+
 app_config_get() { 
   local app_config=$1
   local attribute=$2
