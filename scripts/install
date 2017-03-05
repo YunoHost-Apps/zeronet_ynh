@@ -125,6 +125,7 @@ main() {
   ynh_app_setting_set $app path $path
   ynh_app_setting_set $app url $url
   ynh_app_setting_set $app admin $user
+  ynh_app_setting_set $app allowed_users $user
   ynh_app_setting_set $app deploy_path $deploy_path
   ynh_app_setting_set $app symlink_to_deploy_path $symlink_to_deploy_path
   ynh_app_setting_set $app port $port
