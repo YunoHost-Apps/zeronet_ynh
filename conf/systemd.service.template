@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 User=__USER__
-ExecStart=/usr/bin/python2 ./zeronet.py --ui_port __UI_PORT__ --data_dir __DATA_DIR__ --log_dir __LOG_DIR__
+ExecStart=/usr/bin/python2 ./zeronet.py --ui_port __UI_PORT__ --ui_host __UI_HOST__ --data_dir __DATA_DIR__ --log_dir __LOG_DIR__
 WorkingDirectory=__WORKING_DIRECTORY__
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
