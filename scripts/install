@@ -50,6 +50,7 @@ update_systemd_configuration() {
   local port=$6
   local symlink_to_deploy_path=$7
   local zeronet_dir=$8
+  local ui_host=$9
 
   # create zeronet user data location
   local data_dir=$zeronet_dir/data
@@ -64,6 +65,7 @@ update_systemd_configuration() {
 
   sudo sed --in-place "s@__USER__@$user@g" $service_file
   sudo sed --in-place "s@__UI_PORT__@$port@g" $service_file
+  sudo sed --in-place "s@__UI_HOST__@$ui_host@g" $service_file
   sudo sed --in-place "s@__APP_NAME__@$app@g" $service_file
   sudo sed --in-place "s@__WORKING_DIRECTORY__@$symlink_to_deploy_path@g" $service_file
   sudo sed --in-place "s@__DATA_DIR__@$data_dir@g" $service_file
@@ -142,7 +144,7 @@ main() {
 
   update_nginx_configuration $app $nginx_config_template $nginx_config_file $path $port
   update_systemd_configuration $app $systemd_service_template $systemd_service_name $systemd_service_file \
-    $user $port $symlink_to_deploy_path $user_zeronet_dir
+    $user $port $symlink_to_deploy_path $user_zeronet_dir $domain
 }
 
 main

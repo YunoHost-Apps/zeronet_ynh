@@ -57,6 +57,7 @@ obtain_and_deploy_source() {
   check_file_integrity $src_file $src_checksum
   extract_archive $src_file $deploy_path
   
+  sudo rm -f $symlink_to_deploy_path
   sudo ln --symbolic --force $deploy_path $symlink_to_deploy_path 
 
   sudo chown $user: -LR $symlink_to_deploy_path
