@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-set -eu
-
 source /usr/share/yunohost/helpers
 
 main() {
+  ynh_abort_if_errors
+
   local app=$YNH_APP_INSTANCE_NAME
   local backup_dir=$YNH_APP_BACKUP_DIR
   local deploy_path=$( ynh_app_setting_get $app deploy_path )

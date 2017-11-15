@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# Exit on command errors and treat unset variables as an error
-set -eu
-
 source /usr/share/yunohost/helpers
 source functions.sh
 
@@ -95,6 +92,8 @@ ynh_find_port () {
 }
 
 main() {
+  ynh_abort_if_errors
+
   local app=$YNH_APP_INSTANCE_NAME
   local number=$YNH_APP_INSTANCE_NUMBER
   local domain=$YNH_APP_ARG_DOMAIN

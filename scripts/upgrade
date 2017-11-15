@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
 
-# Exit on command errors and treat unset variables as an error
-set -eu
-
 source /usr/share/yunohost/helpers
 source functions.sh
 
 main() {
+  ynh_abort_if_errors
+
   local app=${YNH_APP_INSTANCE_NAME}
   local user=$( ynh_app_setting_get $app user )
   local deploy_path=$( ynh_app_setting_get $app deploy_path )

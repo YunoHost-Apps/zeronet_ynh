@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -eu
 
 source /usr/share/yunohost/helpers
 
@@ -12,6 +11,8 @@ install_dependencies() {
 }
 
 main() {
+  ynh_abort_if_errors
+
   local app=$YNH_APP_INSTANCE_NAME
   local deploy_path=$(ynh_app_setting_get $app deploy_path)
   local symlink_to_deploy_path=$(ynh_app_setting_get $app symlink_to_deploy_path)
