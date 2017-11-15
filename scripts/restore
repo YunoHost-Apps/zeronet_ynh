@@ -10,10 +10,24 @@ install_dependencies() {
   sudo apt-get install --quiet --yes python-msgpack python-gevent
 }
 
+is_app_restorable() {
+  local -r domain=$1
+  local -r path=$2
+  local -r deploy_path=$3
+
+  ynh_webpath_available $domain $path \
+	  || ynh_die "Path not available: ${domain}${path}"
+
+  test ! -d $deploy_path \
+	  || ynh_die "There is already a directory: $deploy_path"
+}
+
 main() {
   ynh_abort_if_errors
 
   local app=$YNH_APP_INSTANCE_NAME
+  local domain=$(ynh_app_setting_get $app domain)
+  local path=$(ynh_app_setting_get $app path)
   local deploy_path=$(ynh_app_setting_get $app deploy_path)
   local symlink_to_deploy_path=$(ynh_app_setting_get $app symlink_to_deploy_path)
   local nginx_config_file=$( ynh_app_setting_get $app nginx_config_file )
@@ -24,9 +38,9 @@ main() {
 
   local url=$(ynh_app_setting_get $app url)
 
-  install_dependencies
+  is_app_restorable $domain $path $deploy_path
 
-  sudo yunohost app checkurl $url -a $app 
+  install_dependencies
 
   sudo cp -a "./sources" $deploy_path
   sudo ln --symbolic --force $deploy_path $symlink_to_deploy_path 

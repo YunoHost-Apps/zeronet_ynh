@@ -117,7 +117,8 @@ main() {
   local deploy_path=$( make_deploy_path $app $source_version )
   local symlink_to_deploy_path="/var/www/${app}"
 
-  sudo yunohost app checkurl $url -a $app 
+  ynh_webpath_available $domain $path
+  ynh_webpath_register $app $domain $path
 
   ynh_user_exists $user
 
