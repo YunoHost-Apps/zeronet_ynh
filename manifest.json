@@ -7,8 +7,8 @@
     "fr": "Decentralized websites using Bitcoin crypto and BitTorrent network"
   },
   "url": "https://zeronet.io",
-  "license": "free",
-  "version": "0.5.7",
+  "license": "AGPL-3.0",
+  "version": "0.6.0",
   "maintainer": {
     "name": "whypsi",
     "email": "whypsi@riseup.net"
