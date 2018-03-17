@@ -49,6 +49,7 @@ update_systemd_configuration() {
   local symlink_to_deploy_path=$7
   local zeronet_dir=$8
   local ui_host=$9
+  local fs_port=${10} # only works with bash
 
   # create zeronet user data location
   local data_dir=$zeronet_dir/data
@@ -63,6 +64,7 @@ update_systemd_configuration() {
 
   sudo sed --in-place "s@__USER__@$user@g" $service_file
   sudo sed --in-place "s@__UI_PORT__@$ui_port@g" $service_file
+  sudo sed --in-place "s@__FS_PORT__@$fs_port@g" $service_file
   sudo sed --in-place "s@__UI_HOST__@$ui_host@g" $service_file
   sudo sed --in-place "s@__APP_NAME__@$app@g" $service_file
   sudo sed --in-place "s@__WORKING_DIRECTORY__@$symlink_to_deploy_path@g" $service_file
@@ -100,7 +102,8 @@ main() {
   local domain=$YNH_APP_ARG_DOMAIN
   local user=$YNH_APP_ARG_ADMIN
 
-  local ui_port=$( ynh_find_port 43110 ) # the port zeronet listens on
+  local ui_port=$( ynh_find_port 43110 ) # the port zeronet ui listens on
+  local fs_port=$( ynh_find_port 15441 ) # the port zeronet fileserver listens on
 
   local path="/"
   local is_public=0 # by defaut access to zeronet is private
@@ -132,6 +135,7 @@ main() {
   ynh_app_setting_set $app deploy_path $deploy_path
   ynh_app_setting_set $app symlink_to_deploy_path $symlink_to_deploy_path
   ynh_app_setting_set $app ui_port $ui_port
+  ynh_app_setting_set $app fs_port $fs_port
   ynh_app_setting_set $app installed_version $source_version
   ynh_app_setting_set $app nginx_config_file $nginx_config_file
   ynh_app_setting_set $app user $user
@@ -145,7 +149,7 @@ main() {
 
   update_nginx_configuration $app $nginx_config_template $nginx_config_file $path $ui_port
   update_systemd_configuration $app $systemd_service_template $systemd_service_name $systemd_service_file \
-    $user $ui_port $symlink_to_deploy_path $user_zeronet_dir $domain
+    $user $ui_port $symlink_to_deploy_path $user_zeronet_dir $domain $fs_port
 }
 
 main
