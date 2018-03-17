@@ -5,6 +5,7 @@
 ## Install
 - This app can only be installed on root path, i.e. you will need to use a dedicated domain name, e.g.`zeronet.domain.tld`.
 - The app is installed in private mode only so unauthenticated users can not temper with your content.
+- Please do not install app multiple times for now [see issue #5](https://github.com/YunoHost-Apps/zeronet_ynh/issues/5)
 
 ## Hint
 - If you want to be a proper ZeroNet peer (serving your and other's content) you will want to open TCP port 15441 in your firewall and make sure requests to this port reach your instance [do i need to have a port opened](https://zeronet.readthedocs.io/en/latest/faq/#do-i-need-to-have-a-port-opened)
