@@ -8,21 +8,21 @@ nginx_config_file() {
   local domain=$2
 
   sudo mkdir --parents "/etc/nginx/conf.d/${domain}.d"
-  
+
   echo "/etc/nginx/conf.d/${domain}.d/${app}.conf"
 }
 
 update_nginx_configuration() {
   local app=$1
-  local config_template=$2 
+  local config_template=$2
   local config_file=$3
   local path=$4
-  local port=$5
+  local ui_port=$5
 
   sudo cp $config_template $config_file
 
   sudo sed --in-place "s@YNH_WWW_PATH@${path}@g" ${config_file}
-  sudo sed --in-place "s@YNH_LOCAL_PORT@${port}/@g" ${config_file}
+  sudo sed --in-place "s@YNH_LOCAL_PORT@${ui_port}/@g" ${config_file}
 
   sudo service nginx reload
 }
@@ -35,7 +35,8 @@ systemd_service_name() {
 }
 
 #
-# Creates service which runs zeronet on unique port for the user
+# Creates service which runs zeronet on unique
+# UserInterace and FileServer port for the user
 # ZeroNet data is stored in the users home directory in ~/.zeronet
 #
 update_systemd_configuration() {
@@ -44,7 +45,7 @@ update_systemd_configuration() {
   local service_name=$3
   local service_file=$4
   local user=$5
-  local port=$6
+  local ui_port=$6
   local symlink_to_deploy_path=$7
   local zeronet_dir=$8
   local ui_host=$9
@@ -53,7 +54,7 @@ update_systemd_configuration() {
   local data_dir=$zeronet_dir/data
   local log_dir=$zeronet_dir/log
 
-  sudo mkdir -p $data_dir 
+  sudo mkdir -p $data_dir
   sudo mkdir -p $log_dir
   sudo chown -R $user: $zeronet_dir
 
@@ -61,7 +62,7 @@ update_systemd_configuration() {
   sudo cp $service_template $service_file
 
   sudo sed --in-place "s@__USER__@$user@g" $service_file
-  sudo sed --in-place "s@__UI_PORT__@$port@g" $service_file
+  sudo sed --in-place "s@__UI_PORT__@$ui_port@g" $service_file
   sudo sed --in-place "s@__UI_HOST__@$ui_host@g" $service_file
   sudo sed --in-place "s@__APP_NAME__@$app@g" $service_file
   sudo sed --in-place "s@__WORKING_DIRECTORY__@$symlink_to_deploy_path@g" $service_file
@@ -83,7 +84,7 @@ update_systemd_configuration() {
 # | arg: begin_port - port to start to search
 ynh_find_port () {
   port=$1
-  
+
   while netcat -z 127.0.0.1 $port # Check if the port is free
   do
     port=$((port+1)) # Else, pass to next port
@@ -99,7 +100,7 @@ main() {
   local domain=$YNH_APP_ARG_DOMAIN
   local user=$YNH_APP_ARG_ADMIN
 
-  local port=$( ynh_find_port 43110 ) # the port zeronet listens on
+  local ui_port=$( ynh_find_port 43110 ) # the port zeronet listens on
 
   local path="/"
   local is_public=0 # by defaut access to zeronet is private
@@ -130,7 +131,7 @@ main() {
   ynh_app_setting_set $app allowed_users $user
   ynh_app_setting_set $app deploy_path $deploy_path
   ynh_app_setting_set $app symlink_to_deploy_path $symlink_to_deploy_path
-  ynh_app_setting_set $app port $port
+  ynh_app_setting_set $app ui_port $ui_port
   ynh_app_setting_set $app installed_version $source_version
   ynh_app_setting_set $app nginx_config_file $nginx_config_file
   ynh_app_setting_set $app user $user
@@ -142,9 +143,9 @@ main() {
 
   obtain_and_deploy_source $app_config $deploy_path $symlink_to_deploy_path $user
 
-  update_nginx_configuration $app $nginx_config_template $nginx_config_file $path $port
+  update_nginx_configuration $app $nginx_config_template $nginx_config_file $path $ui_port
   update_systemd_configuration $app $systemd_service_template $systemd_service_name $systemd_service_file \
-    $user $port $symlink_to_deploy_path $user_zeronet_dir $domain
+    $user $ui_port $symlink_to_deploy_path $user_zeronet_dir $domain
 }
 
 main
