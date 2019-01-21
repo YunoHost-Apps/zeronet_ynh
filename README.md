@@ -1,4 +1,6 @@
 # ZeroNet package for YunoHost
+[![Integration level](https://dash.yunohost.org/integration/zeronet.svg)](https://dash.yunohost.org/appci/app/zeronet)  
+[![Install ZeroNet with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=zeronet)
 
 - [ZeroNet project](https://github.com/HelloZeroNet/ZeroNet)
 
