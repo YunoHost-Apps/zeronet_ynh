@@ -1,8 +1,6 @@
-# ZeroNet package for YunoHost
+# ZeroNet for YunoHost
 [![Integration level](https://dash.yunohost.org/integration/zeronet.svg)](https://dash.yunohost.org/appci/app/zeronet) ![](https://ci-apps.yunohost.org/ci/badges/zeronet.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/zeronet.maintain.svg)  
 [![Install ZeroNet with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=zeronet)
-
-- [ZeroNet project](https://github.com/HelloZeroNet/ZeroNet)
 
 ## Install
 - This app can only be installed on root path, i.e you will need to use a dedicated domain name, e.g.`zeronet.domain.tld`.
@@ -16,3 +14,23 @@
 
 ## Hint
 - Use at your own risk :-)
+
+## Links
+
+ * Report a bug: https://github.com/YunoHost-Apps/zeronet_ynh/issues
+ * App website: https://zeronet.io/
+ * Upstream app repository: https://github.com/HelloZeroNet/ZeroNet
+ * YunoHost website: https://yunohost.org/
+
+---
+
+## Developer info
+
+Please send your pull request to the [testing branch](https://github.com/YunoHost-Apps/zeronet_ynh/tree/testing).
+
+To try the testing branch, please proceed like that.
+```
+sudo yunohost app install https://github.com/YunoHost-Apps/zeronet_ynh/tree/testing --debug
+or
+sudo yunohost app upgrade zeronet -u https://github.com/YunoHost-Apps/zeronet_ynh/tree/testing --debug
+```
