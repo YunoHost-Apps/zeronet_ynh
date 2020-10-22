@@ -15,7 +15,7 @@ main() {
 
   ynh_backup $deploy_path "sources"
   
-  sudo mkdir --parent ./conf
+  mkdir --parent ./conf
   ynh_backup $nginx_config_file "conf/nginx.conf"
   ynh_backup $systemd_service_file "conf/${systemd_service_name}"
   ynh_backup $user_zeronet_dir "conf/.zeronet"

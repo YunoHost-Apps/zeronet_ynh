@@ -20,13 +20,13 @@ main() {
 
   obtain_and_deploy_source $app_config $new_deploy_path $symlink_to_deploy_path $user
 
-  sudo systemctl restart $systemd_service_name
+  systemctl restart $systemd_service_name
 
   ynh_app_setting_set $app installed_version $source_version
   ynh_app_setting_set $app deploy_path $new_deploy_path
 
   if [ $new_deploy_path != $old_deploy_path ]; then
-    sudo rm -rf $old_deploy_path
+    ynh_secure_remove $old_deploy_path
   fi
 }
 

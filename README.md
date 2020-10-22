@@ -2,6 +2,24 @@
 [![Integration level](https://dash.yunohost.org/integration/zeronet.svg)](https://dash.yunohost.org/appci/app/zeronet) ![](https://ci-apps.yunohost.org/ci/badges/zeronet.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/zeronet.maintain.svg)  
 [![Install ZeroNet with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=zeronet)
 
+*[Lire ce readme en français.](./README_fr.md)*
+
+> *This package allows you to install REPLACEBYYOURAPP quickly and simply on a YunoHost server.  
+If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/install) to learn how to install it.*
+
+## Overview
+eroNet allows you to publish static and dynamic websites on a distributed web platform.
+
+**Shipped version:** 0.7.1
+
+## Screenshots
+
+![](https://camo.githubusercontent.com/4629a7d44a828f5bb20cedd90522ae62f0947b35/68747470733a2f2f692e696d6775722e636f6d2f4836304f4148592e706e67)
+
+## Demo
+
+* [Official demo](Link to a demo site for this app.)
+
 ## Install
 - This app can only be installed on root path, i.e you will need to use a dedicated domain name, e.g.`zeronet.domain.tld`.
 - The app is installed in private mode only so unauthenticated users can not temper with your content.
@@ -12,8 +30,34 @@
 - Installing multiple instances of the app is *experimental*. Internally each instance it will use a unique port for both for ZeroNet UserInterface and FileServer. However, the tracker will see all instances as one peer, as they all use one and the same external IP address.
 - A solution that hasn't been confirmed yet is to use Tor instead. Each instance should then have a unique external address.
 
-## Hint
-- Use at your own risk :-)
+## Documentation
+
+ * Official documentation: https://zeronet.io/docs/site_development/getting_started/
+ * YunoHost documentation: If specific documentation is needed, feel free to contribute.
+
+## YunoHost specific features
+
+#### Multi-user support
+
+Are LDAP and HTTP auth supported?
+Can the app be used by multiple users?
+
+#### Supported architectures
+
+* x86-64 - [![Build Status](https://ci-apps.yunohost.org/ci/logs/REPLACEBYYOURAPP%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/REPLACEBYYOURAPP/)
+* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/REPLACEBYYOURAPP%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/REPLACEBYYOURAPP/)
+
+## Limitations
+
+* Any known limitations.
+
+## Additional information
+
+* Other info you would like to add about this app.
+
+**More info on the documentation page:**  
+https://yunohost.org/packaging_apps
+
 
 ## Links
 

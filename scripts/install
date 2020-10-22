@@ -7,7 +7,7 @@ nginx_config_file() {
   local app=$1
   local domain=$2
 
-  sudo mkdir --parents "/etc/nginx/conf.d/${domain}.d"
+  mkdir --parents "/etc/nginx/conf.d/${domain}.d"
 
   echo "/etc/nginx/conf.d/${domain}.d/${app}.conf"
 }
@@ -19,12 +19,12 @@ update_nginx_configuration() {
   local path=$4
   local ui_port=$5
 
-  sudo cp $config_template $config_file
+  cp $config_template $config_file
 
-  sudo sed --in-place "s@YNH_WWW_PATH@${path}@g" ${config_file}
-  sudo sed --in-place "s@YNH_LOCAL_PORT@${ui_port}/@g" ${config_file}
+  sed --in-place "s@YNH_WWW_PATH@${path}@g" ${config_file}
+  sed --in-place "s@YNH_LOCAL_PORT@${ui_port}/@g" ${config_file}
 
-  sudo service nginx reload
+  service nginx reload
 }
 
 systemd_service_name() {
@@ -55,25 +55,25 @@ update_systemd_configuration() {
   local data_dir=$zeronet_dir/data
   local log_dir=$zeronet_dir/log
 
-  sudo mkdir -p $data_dir
-  sudo mkdir -p $log_dir
-  sudo chown -R $user: $zeronet_dir
+  mkdir -p $data_dir
+  mkdir -p $log_dir
+  chown -R $user: $zeronet_dir
 
   # configure systemd service
-  sudo cp $service_template $service_file
+  cp $service_template $service_file
 
-  sudo sed --in-place "s@__USER__@$user@g" $service_file
-  sudo sed --in-place "s@__UI_PORT__@$ui_port@g" $service_file
-  sudo sed --in-place "s@__FS_PORT__@$fs_port@g" $service_file
-  sudo sed --in-place "s@__UI_HOST__@$ui_host@g" $service_file
-  sudo sed --in-place "s@__APP_NAME__@$app@g" $service_file
-  sudo sed --in-place "s@__WORKING_DIRECTORY__@$symlink_to_deploy_path@g" $service_file
-  sudo sed --in-place "s@__DATA_DIR__@$data_dir@g" $service_file
-  sudo sed --in-place "s@__LOG_DIR__@$log_dir@g" $service_file
+  sed --in-place "s@__USER__@$user@g" $service_file
+  sed --in-place "s@__UI_PORT__@$ui_port@g" $service_file
+  sed --in-place "s@__FS_PORT__@$fs_port@g" $service_file
+  sed --in-place "s@__UI_HOST__@$ui_host@g" $service_file
+  sed --in-place "s@__APP_NAME__@$app@g" $service_file
+  sed --in-place "s@__WORKING_DIRECTORY__@$symlink_to_deploy_path@g" $service_file
+  sed --in-place "s@__DATA_DIR__@$data_dir@g" $service_file
+  sed --in-place "s@__LOG_DIR__@$log_dir@g" $service_file
 
-  sudo systemctl daemon-reload
-  sudo systemctl enable $service_name
-  sudo systemctl start $service_name
+  systemctl daemon-reload
+  systemctl enable $service_name
+  systemctl start $service_name
 }
 
 # Source: https://github.com/YunoHost/yunohost/blob/901e3df9b604f542f2c460aad05bcc8efc9fd054/data/helpers.d/network

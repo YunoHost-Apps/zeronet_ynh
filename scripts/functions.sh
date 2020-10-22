@@ -3,7 +3,7 @@
 set -eu
 
 install_dependencies() {
-  sudo apt-get install --quiet --yes python-msgpack python-gevent
+  apt-get install --quiet --yes python-msgpack python-gevent
 }
 
 app_config_get() { 
@@ -40,8 +40,8 @@ extract_archive() {
   local src_file=$1
   local deploy_path=$2
 
-  sudo mkdir --parents ${deploy_path} 
-  sudo tar --extract --file=${src_file} --directory=${deploy_path} --overwrite --strip-components 1
+  mkdir --parents ${deploy_path} 
+  tar --extract --file=${src_file} --directory=${deploy_path} --overwrite --strip-components 1
 }
 
 obtain_and_deploy_source() {
@@ -57,9 +57,9 @@ obtain_and_deploy_source() {
   check_file_integrity $src_file $src_checksum
   extract_archive $src_file $deploy_path
   
-  sudo rm -f $symlink_to_deploy_path
-  sudo ln --symbolic --force $deploy_path $symlink_to_deploy_path 
+  rm -f $symlink_to_deploy_path
+  ln --symbolic --force $deploy_path $symlink_to_deploy_path 
 
-  sudo chown $user: -LR $symlink_to_deploy_path
-  sudo chown $user: -h $symlink_to_deploy_path
+  chown $user: -LR $symlink_to_deploy_path
+  chown $user: -h $symlink_to_deploy_path
 }
