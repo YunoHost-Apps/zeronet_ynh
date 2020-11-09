@@ -190,7 +190,7 @@ ynh_script_progression --message="Integrating service in YunoHost..."
 ###		- Remove the section "REMOVE SERVICE INTEGRATION IN YUNOHOST" in the remove script
 ###		- As well as the section "INTEGRATE SERVICE IN YUNOHOST" in the restore script
 ###		- And the section "INTEGRATE SERVICE IN YUNOHOST" in the upgrade script
-ynh_add_systemd_config --service="$app" --template="systemd.service" --others_var="$fs_port $datadir"
+ynh_add_systemd_config --service="$app" --template="systemd.service" --others_var="fs_port datadir"
 
 yunohost service add $app --description "$app service" --log "$datadir/log/debug-last.log" --needs_exposed_ports "$fs_port"
 
