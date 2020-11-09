@@ -1,10 +1,10 @@
 # ZeroNet for YunoHost
-[![Integration level](https://dash.yunohost.org/integration/zeronet.svg)](https://dash.yunohost.org/appci/app/zeronet) ![](https://ci-apps.yunohost.org/ci/badges/zeronet.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/zeronet.maintain.svg)  
+[![Integration level](https://dash.yunohost.org/integration/zeronet.svg)](https://dash.yunohost.org/appci/app/zeronet) ![](https://ci-apps.yunohost.org/ci/badges/zeronet.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/zeronet.maintain.svg)
 [![Install ZeroNet with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=zeronet)
 
 *[Lire ce readme en français.](./README_fr.md)*
 
-> *This package allows you to install REPLACEBYYOURAPP quickly and simply on a YunoHost server.  
+> *This package allows you to install ZeroNet quickly and simply on a YunoHost server.
 If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/install) to learn how to install it.*
 
 ## Overview
@@ -55,7 +55,7 @@ Can the app be used by multiple users?
 
 * Other info you would like to add about this app.
 
-**More info on the documentation page:**  
+**More info on the documentation page:**
 https://yunohost.org/packaging_apps
 
 

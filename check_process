@@ -13,14 +13,14 @@
 		pkg_linter=1
 		setup_sub_dir=0
 #   setup_sub_dir=0 test disabled because app is always installed on /
-	  	setup_root=1 
+	  	setup_root=1
 		setup_nourl=0
 	  	setup_private=0
 #   setup_private=0 test disabled because app is always installed as private
 		setup_public=0
 		upgrade=1
   	        backup_restore=1
-		multi_instance=0 
+		multi_instance=0
 #		multi_instance=1 test disabled because it requires installation on sub-path which is not available. successfully conducted test manually
 		wrong_user=1
 		wrong_path=0
@@ -33,8 +33,8 @@
 	Level 1=auto
 	Level 2=auto
 	Level 3=auto
-	Level 4=na 
-# level 4: the app does not directly use Yunohost user data	
+	Level 4=na
+# level 4: the app does not directly use Yunohost user data
   	Level 5=auto
 	Level 6=auto
 	Level 7=auto
