@@ -110,7 +110,7 @@ ynh_script_progression --message="Installing dependencies..."
 ###		- As well as the section "REINSTALL DEPENDENCIES" in the restore script
 ###		- And the section "UPGRADE DEPENDENCIES" in the upgrade script
 
-pip3 install msgpack-python gevent
+pip3 install  msgpack-python gevent
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -141,7 +141,7 @@ ynh_add_nginx_config
 ynh_script_progression --message="Configuring system user..."
 
 # Create a system user
-ynh_system_user_create --username=$app
+ynh_system_user_create --username=$app --home_dir=$final_path
 
 #=================================================
 # SETUP SYSTEMD
