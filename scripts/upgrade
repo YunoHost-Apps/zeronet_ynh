@@ -140,7 +140,7 @@ chown -R $app: $datadir
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..."
-ynh_add_systemd_config --service="$app" --template="systemd.service" --others_var="fs_port datadir"
+ynh_add_systemd_config --service="$app" --template="systemd.service" --others_var="fs_port port domain datadir"
 yunohost service add $app --description "$app service" --log "$datadir/log/debug-last.log" --needs_exposed_ports "$fs_port"
 
 #=================================================
