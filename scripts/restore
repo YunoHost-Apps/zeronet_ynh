@@ -86,7 +86,7 @@ chown -R $app: $datadir
 ynh_script_progression --message="Reinstalling dependencies..."
 
 # Define and install dependencies
-ynh_install_app_dependencies $pkg_dependencies
+pip3 install msgpack-python gevent
 
 #=================================================
 # RESTORE SYSTEMD

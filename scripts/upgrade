@@ -108,7 +108,7 @@ ynh_add_nginx_config
 #=================================================
 ynh_script_progression --message="Upgrading dependencies..."
 
-ynh_install_app_dependencies $pkg_dependencies
+pip3 install msgpack-python gevent
 
 #=================================================
 # CREATE DEDICATED USER

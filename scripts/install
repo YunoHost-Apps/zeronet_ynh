@@ -110,7 +110,7 @@ ynh_script_progression --message="Installing dependencies..."
 ###		- As well as the section "REINSTALL DEPENDENCIES" in the restore script
 ###		- And the section "UPGRADE DEPENDENCIES" in the upgrade script
 
-ynh_install_app_dependencies $pkg_dependencies
+pip3 install msgpack-python gevent
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -232,7 +232,7 @@ ynh_systemd_action --service_name=$app --action="start" --log_path="$datadir/log
 ynh_script_progression --message="Configuring SSOwat..."
 
 # Restrict access to admin only
-yunohost app addaccess --users=$admin $app
+#yunohost app addaccess --users=$admin $app
 
 #=================================================
 # RELOAD NGINX
