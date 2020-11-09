@@ -28,9 +28,6 @@ ynh_script_progression --message="Loading installation settings..."
 
 # Needed for helper "ynh_add_nginx_config"
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-port=$(ynh_app_setting_get --app=$app --key=port)
-fs_port=$(ynh_app_setting_get --app=$app --key=fs_port)
-datadir=$(ynh_app_setting_get --app=$app --key=datadir)
 
 # Add settings here as needed by your application
 #db_name=$(ynh_app_setting_get --app=$app --key=db_name)
@@ -120,8 +117,7 @@ fi
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..."
-
-yunohost service add $app --description "$app service" --others_var="$fs_port $datadir" --log "$datadir/log/debug-last.log" --needs_exposed_ports "$fs_port"
+ynh_replace_string --match_string="$old_domain" --replace_string="$new_domain" --target_file="/etc/systemd/system/${app}.service"
 
 #=================================================
 # START SYSTEMD SERVICE
