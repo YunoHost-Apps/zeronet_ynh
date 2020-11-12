@@ -26,7 +26,7 @@ ynh_abort_if_errors
 
 domain=$YNH_APP_ARG_DOMAIN
 path_url="/"
-admin=$YNH_APP_ARG_ADMIN
+password=$YNH_APP_ARG_PASSWORD
 
 
 ### If it's a multi-instance app, meaning it can be installed several times independently
@@ -69,9 +69,8 @@ ynh_script_progression --message="Storing installation settings..."
 
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
-ynh_app_setting_set --app=$app --key=admin --value=$admin
 ynh_app_setting_set --app=$app --key=datadir --value=$datadir
-
+ynh_app_setting_set --app=$app --key=password --value=$password
 
 #=================================================
 # STANDARD MODIFICATIONS
@@ -110,7 +109,8 @@ ynh_script_progression --message="Installing dependencies..."
 ###		- As well as the section "REINSTALL DEPENDENCIES" in the restore script
 ###		- And the section "UPGRADE DEPENDENCIES" in the upgrade script
 
-pip3 install  msgpack-python gevent
+ynh_install_app_dependencies $pkg_dependencies
+pip3 install  msgpack-python gevent base58 merkletools
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -162,20 +162,17 @@ ynh_script_progression --message="Configuring a systemd service..."
 ynh_add_systemd_config
 
 #=================================================
-# SETUP APPLICATION WITH CURL
+# SETUP APPLICATION PERMISSIONS
 #=================================================
 
-### Use these lines only if the app installation needs to be finalized through
-### web forms. We generally don't want to ask the final user,
-### so we're going to use curl to automatically fill the fields and submit the
-### forms.
+# Enable password authentication for Zeronet
+mv $final_path/plugins/disabled-UiPassword  $final_path/plugins/UiPassword
 
-# Set right permissions for curl install
+# Set right permissions
 mkdir -p $datadir/data
 mkdir -p $datadir/log
 chown -R $app: $final_path
 chown -R $app: $datadir
-
 
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
@@ -190,7 +187,7 @@ ynh_script_progression --message="Integrating service in YunoHost..."
 ###		- Remove the section "REMOVE SERVICE INTEGRATION IN YUNOHOST" in the remove script
 ###		- As well as the section "INTEGRATE SERVICE IN YUNOHOST" in the restore script
 ###		- And the section "INTEGRATE SERVICE IN YUNOHOST" in the upgrade script
-ynh_add_systemd_config --service="$app" --template="systemd.service" --others_var="fs_port port domain datadir"
+ynh_add_systemd_config --service="$app" --template="systemd.service" --others_var="fs_port port domain datadir password"
 
 yunohost service add $app --description "$app service" --log "$datadir/log/debug-last.log" --needs_exposed_ports "$fs_port"
 
@@ -231,9 +228,9 @@ ynh_systemd_action --service_name=$app --action="start" --log_path="$datadir/log
 #=================================================
 ynh_script_progression --message="Configuring SSOwat..."
 
-# Restrict access to admin only
-#yunohost app addaccess --users=$admin $app
+# Allow the app to be public
 ynh_app_setting_set --app=$app --key=unprotected_uris --value="/"
+
 #=================================================
 # RELOAD NGINX
 #=================================================

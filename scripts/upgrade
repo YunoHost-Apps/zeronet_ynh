@@ -18,11 +18,11 @@ app=$YNH_APP_INSTANCE_NAME
 
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 path_url=$(ynh_app_setting_get --app=$app --key=path)
-admin=$(ynh_app_setting_get --app=$app --key=admin)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 port=$(ynh_app_setting_get --app=$app --key=port)
 fs_port=$(ynh_app_setting_get --app=$app --key=fs_port)
 datadir=$(ynh_app_setting_get --app=$app --key=datadir)
+password=$(ynh_app_setting_get --app=$app --key=password)
 
 #=================================================
 # CHECK VERSION
@@ -108,7 +108,8 @@ ynh_add_nginx_config
 #=================================================
 ynh_script_progression --message="Upgrading dependencies..."
 
-pip3 install msgpack-python gevent
+ynh_install_app_dependencies $pkg_dependencies
+pip3 install  msgpack-python gevent base58 merkletools
 
 #=================================================
 # CREATE DEDICATED USER
@@ -116,7 +117,7 @@ pip3 install msgpack-python gevent
 ynh_script_progression --message="Making sure dedicated system user exists..."
 
 # Create a dedicated user (if not existing)
-ynh_system_user_create --username=$app
+ynh_system_user_create --username=$app --home_dir=$datadir -s
 
 #=================================================
 # SETUP SYSTEMD
@@ -132,6 +133,9 @@ ynh_add_systemd_config
 # SECURE FILES AND DIRECTORIES
 #=================================================
 
+# Enable password authentication for Zeronet
+mv $final_path/plugins/disabled-UiPassword  $final_path/plugins/UiPassword
+
 # Set permissions on app files
 chown -R $app: $final_path
 chown -R $app: $datadir
@@ -140,7 +144,7 @@ chown -R $app: $datadir
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..."
-ynh_add_systemd_config --service="$app" --template="systemd.service" --others_var="fs_port port domain datadir"
+ynh_add_systemd_config --service="$app" --template="systemd.service" --others_var="fs_port port domain datadir password"
 yunohost service add $app --description "$app service" --log "$datadir/log/debug-last.log" --needs_exposed_ports "$fs_port"
 
 #=================================================
@@ -155,8 +159,8 @@ ynh_systemd_action --service_name=$app --action="start" --log_path="$datadir/log
 #=================================================
 ynh_script_progression --message="Upgrading SSOwat configuration..."
 
-# Restrict access to admin only
-yunohost app addaccess --users=$admin $app
+# Allow the app to be public
+ynh_app_setting_set --app=$app --key=unprotected_uris --value="/"
 
 #=================================================
 # RELOAD NGINX

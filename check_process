@@ -4,7 +4,7 @@
 	; Manifest
 		domain="sub.domain.tld"	(DOMAIN)
 #		path="/"	(PATH)
-		admin="john"	(USER)
+		password="seceret123"	(USER)
 #		language="fr"
 #		is_public="Yes"	(PUBLIC|public=Yes|private=No)
 #		is_public=0	(PUBLIC|public=1|private=0)

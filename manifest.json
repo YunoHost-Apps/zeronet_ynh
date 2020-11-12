@@ -32,14 +32,15 @@
           "example": "zeronet.domain.tld"
         },
         {
-          "name": "admin",
-          "type": "user",
+          "name": "password",
+          "type": "password",
+          "optional": true,
           "ask": {
-            "en": "Choose an admin user (the one who will be able to access the admin interface)",
-            "fr": "Choisissez l'administrateur (seul autorisé à accéder à l'interface d'administration)"
+              "en": "Set the password for the Zeronet.",
+              "fr": "Définissez le mot de passe pour votre Zeronet."
           },
-          "example": "john doe"
-        }
+          "example": "myreallystrengthpassword"
+      }
       ]
     }
 }

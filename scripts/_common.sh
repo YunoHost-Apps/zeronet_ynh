@@ -5,7 +5,7 @@
 #=================================================
 
 # dependencies used by the app
-pkg_dependencies="python3-msgpack python3-socks python3-gevent"
+pkg_dependencies="python3-venv python3-pip"
 
 #=================================================
 # PERSONAL HELPERS
