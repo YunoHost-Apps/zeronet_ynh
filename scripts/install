@@ -110,7 +110,7 @@ ynh_script_progression --message="Installing dependencies..."
 ###		- And the section "UPGRADE DEPENDENCIES" in the upgrade script
 
 ynh_install_app_dependencies $pkg_dependencies
-pip3 install  msgpack-python gevent base58 merkletools
+pip3 install  msgpack-python gevent base58 merkletools rsa PySocks pyasn1 websocket_client gevent-ws coincurve maxminddb
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
