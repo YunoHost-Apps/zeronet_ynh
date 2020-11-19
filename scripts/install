@@ -221,7 +221,7 @@ ynh_script_progression --message="Starting a systemd service..."
 ###		- And the section "STOP SYSTEMD SERVICE" and "START SYSTEMD SERVICE" in the change_url script
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action="start" --log_path="$datadir/log/debug-last.log"
+ynh_systemd_action --service_name=$app --action="start" --log_path="$datadir/log/debug-last.log" --line_match="Ui.UiServer Web interface" --timeout=120
 
 #=================================================
 # SETUP SSOWAT
