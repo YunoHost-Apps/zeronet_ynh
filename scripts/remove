@@ -51,6 +51,7 @@ ynh_script_progression --message="Removing dependencies..."
 # Remove metapackage and its dependencies
 pip3 uninstall -y msgpack-python gevent base58 merkletools rsa PySocks pyasn1 websocket_client gevent-ws coincurve maxminddb
 ynh_remove_app_dependencies
+
 #=================================================
 # REMOVE APP MAIN DIR
 #=================================================
@@ -63,9 +64,9 @@ ynh_secure_remove --file="$datadir"
 #=================================================
 # REMOVE NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Removing nginx web server configuration..."
+ynh_script_progression --message="Removing NGINX web server configuration..."
 
-# Remove the dedicated nginx config
+# Remove the dedicated NGINX config
 ynh_remove_nginx_config
 
 #=================================================

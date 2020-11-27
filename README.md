@@ -1,6 +1,6 @@
 # ZeroNet for YunoHost
-[![Integration level](https://dash.yunohost.org/integration/zeronet.svg)](https://dash.yunohost.org/appci/app/zeronet) ![](https://ci-apps.yunohost.org/ci/badges/zeronet.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/zeronet.maintain.svg)
 
+[![Integration level](https://dash.yunohost.org/integration/zeronet.svg)](https://dash.yunohost.org/appci/app/zeronet) ![](https://ci-apps.yunohost.org/ci/badges/zeronet.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/zeronet.maintain.svg)  
 [![Install ZeroNet with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=zeronet)
 
 *[Lire ce readme en français.](./README_fr.md)*
@@ -15,7 +15,7 @@ ZeroNet allows you to publish static and dynamic websites on a distributed web p
 
 ## Screenshots
 
-![](https://camo.githubusercontent.com/4629a7d44a828f5bb20cedd90522ae62f0947b35/68747470733a2f2f692e696d6775722e636f6d2f4836304f4148592e706e67)
+![](https://camo.githubusercontent.com/7b79b9725df29fa5403ba490ff9870e0464a00e106bad5536867602625ca94cc/68747470733a2f2f692e696d6775722e636f6d2f4836304f4148592e706e67)
 
 
 ## Install instructions
