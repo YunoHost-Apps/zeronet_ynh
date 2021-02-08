@@ -1,0 +1,15 @@
+[Unit]
+Description=__APP__ service
+After=network.target
+
+[Service]
+User=__APP__
+Group=__APP__
+WorkingDirectory=__FINALPATH__
+ExecStart=/usr/bin/python3 __FINALPATH__/zeronet.py --ui_port __PORT__ --ui_host __DOMAIN__ --fileserver_port __FS_PORT__ --data_dir __DATADIR__/data --log_dir __DATADIR__/log --ui_password __PASSWORD__
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
