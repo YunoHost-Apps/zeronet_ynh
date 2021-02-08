@@ -1,6 +1,5 @@
-;; Nom du test
-	auto_remove=1
-# Commentaire ignoré
+;; Complete Test
+# Comment ignored
 	; Manifest
 		domain="sub.domain.tld"	(DOMAIN)
 #		path="/"	(PATH)
@@ -19,13 +18,12 @@
 #   setup_private=0 test disabled because app is always installed as private
 		setup_public=0
 		upgrade=1
-  	        backup_restore=1
-		multi_instance=0
-#		multi_instance=1 test disabled because it requires installation on sub-path which is not available. successfully conducted test manually
-		wrong_user=1
-		wrong_path=0
-		incorrect_path=0
-#		corrupt_source=0
-		fail_download_source=0
-		port_already_use=1	(66)
-		final_path_already_use=1
+  	    backup_restore=1
+		multi_instance=q
+;;; Options
+Email=
+Notification=none
+;;; Upgrade options
+    ; commit=CommitHash
+        name=Name and date of the commit.
+        manifest_arg=domain=DOMAIN&path=PATH&admin=USER&is_public=1&password=pass&
