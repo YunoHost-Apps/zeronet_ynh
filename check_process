@@ -19,7 +19,7 @@
 		setup_public=0
 		upgrade=1
   	    backup_restore=1
-		multi_instance=q
+		multi_instance=1
 ;;; Options
 Email=
 Notification=none
