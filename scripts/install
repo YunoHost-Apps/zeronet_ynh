@@ -1,155 +1,161 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
+#=================================================
+# GENERIC START
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source _common.sh
 source /usr/share/yunohost/helpers
-source functions.sh
 
-nginx_config_file() {
-  local app=$1
-  local domain=$2
+#=================================================
+# MANAGE SCRIPT FAILURE
+#=================================================
 
-  sudo mkdir --parents "/etc/nginx/conf.d/${domain}.d"
-
-  echo "/etc/nginx/conf.d/${domain}.d/${app}.conf"
+ynh_clean_setup () {
+	### Remove this function if there's nothing to clean before calling the remove script.
+	true
 }
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
 
-update_nginx_configuration() {
-  local app=$1
-  local config_template=$2
-  local config_file=$3
-  local path=$4
-  local ui_port=$5
+#=================================================
+# RETRIEVE ARGUMENTS FROM THE MANIFEST
+#=================================================
 
-  sudo cp $config_template $config_file
+domain=$YNH_APP_ARG_DOMAIN
+path_url="/"
+password=$YNH_APP_ARG_PASSWORD
 
-  sudo sed --in-place "s@YNH_WWW_PATH@${path}@g" ${config_file}
-  sudo sed --in-place "s@YNH_LOCAL_PORT@${ui_port}/@g" ${config_file}
+app=$YNH_APP_INSTANCE_NAME
+datadir="/home/yunohost.app/${app}"
+#=================================================
+# CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
+#=================================================
+ynh_script_progression --message="Validating installation parameters..."
 
-  sudo service nginx reload
-}
+final_path=/var/www/$app
+test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
 
-systemd_service_name() {
-  local app=$1
-  local user=$2
+# Register (book) web path
+ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
 
-  echo "ynh-${app}-${user}.service"
-}
+#=================================================
+# STORE SETTINGS FROM MANIFEST
+#=================================================
+ynh_script_progression --message="Storing installation settings..."
 
-#
-# Creates service which runs zeronet on unique
-# UserInterace and FileServer port for the user
-# ZeroNet data is stored in the users home directory in ~/.zeronet
-#
-update_systemd_configuration() {
-  local app=$1
-  local service_template=$2
-  local service_name=$3
-  local service_file=$4
-  local user=$5
-  local ui_port=$6
-  local symlink_to_deploy_path=$7
-  local zeronet_dir=$8
-  local ui_host=$9
-  local fs_port=${10} # only works with bash
+ynh_app_setting_set --app=$app --key=domain --value=$domain
+ynh_app_setting_set --app=$app --key=path --value=$path_url
+ynh_app_setting_set --app=$app --key=datadir --value=$datadir
+ynh_app_setting_set --app=$app --key=password --value=$password
 
-  # create zeronet user data location
-  local data_dir=$zeronet_dir/data
-  local log_dir=$zeronet_dir/log
+#=================================================
+# STANDARD MODIFICATIONS
+#=================================================
+# FIND AND OPEN A PORT
+#=================================================
+ynh_script_progression --message="Configuring firewall..."
 
-  sudo mkdir -p $data_dir
-  sudo mkdir -p $log_dir
-  sudo chown -R $user: $zeronet_dir
+# Find an available port
+port=$(ynh_find_port --port=43110)
+fs_port=$(ynh_find_port --port=15441)
+ynh_app_setting_set --app=$app --key=port --value=$port
+ynh_app_setting_set --app=$app --key=fs_port --value=$fs_port
 
-  # configure systemd service
-  sudo cp $service_template $service_file
+# Open the port
+ynh_exec_warn_less yunohost firewall allow --no-upnp TCP $fs_port
 
-  sudo sed --in-place "s@__USER__@$user@g" $service_file
-  sudo sed --in-place "s@__UI_PORT__@$ui_port@g" $service_file
-  sudo sed --in-place "s@__FS_PORT__@$fs_port@g" $service_file
-  sudo sed --in-place "s@__UI_HOST__@$ui_host@g" $service_file
-  sudo sed --in-place "s@__APP_NAME__@$app@g" $service_file
-  sudo sed --in-place "s@__WORKING_DIRECTORY__@$symlink_to_deploy_path@g" $service_file
-  sudo sed --in-place "s@__DATA_DIR__@$data_dir@g" $service_file
-  sudo sed --in-place "s@__LOG_DIR__@$log_dir@g" $service_file
+#=================================================
+# INSTALL DEPENDENCIES
+#=================================================
+ynh_script_progression --message="Installing dependencies..."
 
-  sudo systemctl daemon-reload
-  sudo systemctl enable $service_name
-  sudo systemctl start $service_name
-}
+ynh_install_app_dependencies $pkg_dependencies
 
-# Source: https://github.com/YunoHost/yunohost/blob/901e3df9b604f542f2c460aad05bcc8efc9fd054/data/helpers.d/network
-#
-# Find a free port and return it
-#
-# example: port=$(ynh_find_port 8080)
-#
-# usage: ynh_find_port begin_port
-# | arg: begin_port - port to start to search
-ynh_find_port () {
-  port=$1
+pip3 install gevent-websocket msgpack-python gevent base58 merkletools rsa PySocks pyasn1 websocket_client gevent-ws coincurve maxminddb
 
-  while netcat -z 127.0.0.1 $port # Check if the port is free
-  do
-    port=$((port+1)) # Else, pass to next port
-  done
-  echo $port
-}
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+ynh_script_progression --message="Setting up source files..."
 
-main() {
-  ynh_abort_if_errors
+ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+# Download, check integrity, uncompress and patch the source from app.src
+ynh_setup_source --dest_dir="$final_path"
 
-  local app=$YNH_APP_INSTANCE_NAME
-  local number=$YNH_APP_INSTANCE_NUMBER
-  local domain=$YNH_APP_ARG_DOMAIN
-  local user=$YNH_APP_ARG_ADMIN
+#=================================================
+# NGINX CONFIGURATION
+#=================================================
+ynh_script_progression --message="Configuring NGINX web server..."
 
-  local ui_port=$( ynh_find_port 43110 ) # the port zeronet ui listens on
-  local fs_port=$( ynh_find_port 15441 ) # the port zeronet fileserver listens on
+# Create a dedicated NGINX config
+ynh_add_nginx_config
 
-  local path="/"
-  local is_public=0 # by defaut access to zeronet is private
-  local nginx_config_template=../conf/nginx.conf.template
-  local systemd_service_template=../conf/systemd.service.template
-  local app_config=../conf/app.src
-  local systemd_service_dir=/etc/systemd/system
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Configuring system user..."
 
-  local url=$domain$path
-  local source_version=$( app_config_get $app_config "SOURCE_VERSION" )
-  local systemd_service_name=$( systemd_service_name $app $user )
-  local systemd_service_file="${systemd_service_dir}/${systemd_service_name}"
-  local nginx_config_file=$( nginx_config_file $app $domain )
-  local user_zeronet_dir="/home/${user}/.zeronet"
-  local deploy_path=$( make_deploy_path $app $source_version )
-  local symlink_to_deploy_path="/var/www/${app}"
+# Create a system user
+ynh_system_user_create --username=$app --home_dir=$datadir -s
 
-  ynh_webpath_available $domain $path
-  ynh_webpath_register $app $domain $path
+#=================================================
+# SETUP SYSTEMD
+#=================================================
+ynh_script_progression --message="Configuring a systemd service..."
 
-  ynh_user_exists $user
+# Create a dedicated systemd config
+ynh_add_systemd_config
 
-  ynh_app_setting_set $app is_public $is_public
-  ynh_app_setting_set $app domain $domain
-  ynh_app_setting_set $app path $path
-  ynh_app_setting_set $app url $url
-  ynh_app_setting_set $app admin $user
-  ynh_app_setting_set $app allowed_users $user
-  ynh_app_setting_set $app deploy_path $deploy_path
-  ynh_app_setting_set $app symlink_to_deploy_path $symlink_to_deploy_path
-  ynh_app_setting_set $app ui_port $ui_port
-  ynh_app_setting_set $app fs_port $fs_port
-  ynh_app_setting_set $app installed_version $source_version
-  ynh_app_setting_set $app nginx_config_file $nginx_config_file
-  ynh_app_setting_set $app user $user
-  ynh_app_setting_set $app user_zeronet_dir $user_zeronet_dir
-  ynh_app_setting_set $app systemd_service_name $systemd_service_name
-  ynh_app_setting_set $app systemd_service_file $systemd_service_file
+#=================================================
+# SETUP APPLICATION PERMISSIONS
+#=================================================
 
-  install_dependencies
+# Enable password authentication for Zeronet
+mv $final_path/plugins/disabled-UiPassword  $final_path/plugins/UiPassword
 
-  obtain_and_deploy_source $app_config $deploy_path $symlink_to_deploy_path $user
+# Set right permissions
+mkdir -p $datadir/data
+mkdir -p $datadir/log
+chown -R $app: $final_path
+chown -R $app: $datadir
 
-  update_nginx_configuration $app $nginx_config_template $nginx_config_file $path $ui_port
-  update_systemd_configuration $app $systemd_service_template $systemd_service_name $systemd_service_file \
-    $user $ui_port $symlink_to_deploy_path $user_zeronet_dir $domain $fs_port
-}
+#=================================================
+# INTEGRATE SERVICE IN YUNOHOST
+#=================================================
+ynh_script_progression --message="Integrating service in YunoHost..."
 
-main
+ynh_add_systemd_config --service="$app" --template="systemd.service" --others_var="fs_port port domain datadir password"
+
+yunohost service add $app --description "$app service" --log "$datadir/log/debug-last.log" --needs_exposed_ports "$fs_port"
+
+#=================================================
+# START SYSTEMD SERVICE
+#=================================================
+ynh_script_progression --message="Starting a systemd service..."
+
+# Start a systemd service
+ynh_systemd_action --service_name=$app --action="start" --log_path="$datadir/log/debug-last.log" --line_match="Ui.UiServer Web interface" --timeout=120
+
+#=================================================
+# SETUP SSOWAT
+#=================================================
+ynh_script_progression --message="Configuring permissions..."
+
+# Allow the app to be public
+ynh_permission_update --permission="main" --add="visitors"
+
+#=================================================
+# RELOAD NGINX
+#=================================================
+ynh_script_progression --message="Reloading NGINX web server..."
+
+ynh_systemd_action --service_name=nginx --action=reload
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Installation of $app completed"

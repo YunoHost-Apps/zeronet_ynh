@@ -1,10 +1,9 @@
-;; Nom du test
-	auto_remove=1
-# Commentaire ignoré
+;; Complete Test
+# Comment ignored
 	; Manifest
 		domain="sub.domain.tld"	(DOMAIN)
 #		path="/"	(PATH)
-		admin="john"	(USER)
+		password="seceret123"	(USER)
 #		language="fr"
 #		is_public="Yes"	(PUBLIC|public=Yes|private=No)
 #		is_public=0	(PUBLIC|public=1|private=0)
@@ -13,31 +12,18 @@
 		pkg_linter=1
 		setup_sub_dir=0
 #   setup_sub_dir=0 test disabled because app is always installed on /
-	  	setup_root=1 
+	  	setup_root=1
 		setup_nourl=0
 	  	setup_private=0
 #   setup_private=0 test disabled because app is always installed as private
 		setup_public=0
 		upgrade=1
-  	        backup_restore=1
-		multi_instance=0 
-#		multi_instance=1 test disabled because it requires installation on sub-path which is not available. successfully conducted test manually
-		wrong_user=1
-		wrong_path=0
-		incorrect_path=0
-#		corrupt_source=0
-		fail_download_source=0
-		port_already_use=1	(66)
-		final_path_already_use=1
-;;; Levels
-	Level 1=auto
-	Level 2=auto
-	Level 3=auto
-	Level 4=na 
-# level 4: the app does not directly use Yunohost user data	
-  	Level 5=auto
-	Level 6=auto
-	Level 7=auto
-	Level 8=0
-	Level 9=0
-	Level 10=0
+  	    backup_restore=1
+		multi_instance=1
+;;; Options
+Email=
+Notification=none
+;;; Upgrade options
+    ; commit=CommitHash
+        name=Name and date of the commit.
+        manifest_arg=domain=DOMAIN&path=PATH&admin=USER&is_public=1&password=pass&

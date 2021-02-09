@@ -4,17 +4,17 @@
   "packaging_format": 1,
   "description": {
     "en": "Decentralized websites using Bitcoin crypto and BitTorrent network",
-    "fr": "Decentralized websites using Bitcoin crypto and BitTorrent network"
+    "fr": "Sites Web décentralisés utilisant la crypto Bitcoin et le réseau BitTorrent"
   },
+  "version": "0.7.1~ynh1",
   "url": "https://zeronet.io",
   "license": "AGPL-3.0",
-  "version": "0.6.0",
   "maintainer": {
     "name": "whypsi",
     "email": "whypsi@riseup.net"
   },
   "requirements": {
-    "yunohost": ">> 2.4.0"
+    "yunohost": ">> 3.8.1"
   },
   "multi_instance": true,
   "services": [
@@ -26,19 +26,20 @@
           "name": "domain",
           "type": "domain",
           "ask": {
-            "en": "Choose a sub domain name for ynhexample",
-            "fr": "Choisissez un nom de domaine pour ynhexample"
+            "en": "Choose a sub domain name for ZeroNet",
+            "fr": "Choisissez un nom de domaine pour ZeroNet"
           },
           "example": "zeronet.domain.tld"
         },
         {
-          "name": "admin",
-          "type": "user",
+          "name": "password",
+          "type": "password",
+          "optional": true,
           "ask": {
-            "en": "Choose an admin user (the one who will be able to access the admin interface)",
-            "fr": "Choisissez l'administrateur (seul autorisé à accéder à l'interface d'administration)"
+              "en": "Set the password for the Zeronet.",
+              "fr": "Définissez le mot de passe pour votre Zeronet."
           },
-          "example": "john doe"
+          "example": "myreallystrengthpassword"
         }
       ]
     }
