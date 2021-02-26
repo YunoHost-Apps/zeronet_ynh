@@ -73,7 +73,7 @@ ynh_exec_warn_less yunohost firewall allow --no-upnp TCP $fs_port
 ynh_script_progression --message="Installing dependencies..."
 
 ynh_install_app_dependencies $pkg_dependencies
-
+pip3 install --upgrade pip
 pip3 install gevent-websocket msgpack-python gevent base58 merkletools rsa PySocks pyasn1 websocket_client gevent-ws coincurve maxminddb
 
 #=================================================
