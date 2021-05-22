@@ -1,24 +1,16 @@
-;; Complete Test
-# Comment ignored
+;; Test complet
 	; Manifest
-		domain="sub.domain.tld"	(DOMAIN)
-#		path="/"	(PATH)
-		password="seceret123"	(USER)
-#		language="fr"
-#		is_public="Yes"	(PUBLIC|public=Yes|private=No)
-#		is_public=0	(PUBLIC|public=1|private=0)
-#		port="666"	(PORT)
+		domain="sub.domain.tld"
+		password="seceret123"
 	; Checks
 		pkg_linter=1
 		setup_sub_dir=0
-#   setup_sub_dir=0 test disabled because app is always installed on /
-	  	setup_root=1
+		setup_root=1
 		setup_nourl=0
-	  	setup_private=0
-#   setup_private=0 test disabled because app is always installed as private
+		setup_private=0
 		setup_public=0
 		upgrade=1
-  	    backup_restore=1
+		backup_restore=1
 		multi_instance=1
 ;;; Options
 Email=
