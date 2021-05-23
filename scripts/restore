@@ -6,6 +6,7 @@
 # IMPORT GENERIC HELPERS
 #=================================================
 
+# Keep this path for calling _common.sh inside the execution's context of backup and restore scripts
 source ../settings/scripts/_common.sh
 source /usr/share/yunohost/helpers
 
@@ -48,16 +49,9 @@ test ! -d $final_path \
 #=================================================
 # RESTORE THE NGINX CONFIGURATION
 #=================================================
+ynh_script_progression --message="Restoring the NGINX configuration..."
 
 ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
-
-#=================================================
-# RESTORE THE APP MAIN DIR
-#=================================================
-ynh_script_progression --message="Restoring the app main directory..."
-
-ynh_restore_file --origin_path="$final_path"
-ynh_restore_file --origin_path="$datadir"
 
 #=================================================
 # RECREATE THE DEDICATED USER
@@ -65,15 +59,17 @@ ynh_restore_file --origin_path="$datadir"
 ynh_script_progression --message="Recreating the dedicated system user..."
 
 # Create the dedicated user (if not existing)
-ynh_system_user_create --username=$app --home_dir=$datadir -s
+ynh_system_user_create --username=$app --home_dir=$final_path
 
 #=================================================
-# RESTORE USER RIGHTS
+# RESTORE THE APP MAIN DIR
 #=================================================
+ynh_script_progression --message="Restoring the app main directory..."
 
-# Restore permissions on app files
-chown -R $app: $final_path
-chown -R $app: $datadir
+ynh_restore_file --origin_path="$final_path"
+chmod 750 "$final_path"
+chmod -R o-rwx "$final_path"
+chown -R $app:$app "$final_path"
 
 #=================================================
 # SPECIFIC RESTORATION
@@ -84,8 +80,28 @@ ynh_script_progression --message="Reinstalling dependencies..."
 
 # Define and install dependencies
 ynh_install_app_dependencies $pkg_dependencies
+
+#=================================================
+# BUILDING ZERONET
+#=================================================
+ynh_script_progression --message="Building zeronet..."
 pip3 install --upgrade pip
 pip3 install  merkletools PySocks websocket_client gevent-ws coincurve bencode
+
+
+#=================================================
+# RESTORE VARIOUS FILES
+#=================================================
+ynh_script_progression --message="Restoring various files..."
+
+# Restore permissions on app files
+ynh_restore_file --origin_path="$datadir"
+
+mkdir -p "$datadir"
+chmod 750 "$datadir"
+chmod -R o-rwx "$datadir"
+chown -R $app:$app "$datadir"
+
 #=================================================
 # RESTORE SYSTEMD
 #=================================================
@@ -99,14 +115,14 @@ systemctl enable $app.service --quiet
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..."
 
-yunohost service add $app --description "$app service" --log "$datadir/log/debug-last.log" --needs_exposed_ports "$fs_port"
+yunohost service add $app --description="$app service" --log="$datadir/log/debug-last.log" --needs_exposed_ports="$fs_port"
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
 ynh_script_progression --message="Starting a systemd service..."
 
-ynh_systemd_action --service_name=$app --action="start" --log_path="$datadir/log/debug-last.log" --line_match="Ui.UiServer Web interface" --timeout=120
+ynh_systemd_action --service_name=$app --action="start" --log_path="systemd" --line_match="Ui.UiServer Web interface" --timeout=120
 
 #=================================================
 # GENERIC FINALIZATION
