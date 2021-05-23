@@ -74,15 +74,14 @@ ynh_script_progression --message="Installing dependencies..."
 
 ynh_install_app_dependencies $pkg_dependencies
 pip3 install --upgrade pip
-pip3 install gevent-websocket msgpack-python gevent base58 merkletools rsa PySocks pyasn1 websocket_client gevent-ws coincurve maxminddb
-
+pip3 install merkletools PySocks pyasn1 websocket_client gevent-ws coincurve bencode
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression --message="Setting up source files..."
 
 ynh_app_setting_set --app=$app --key=final_path --value=$final_path
-# Download, check integrity, uncompress and patch the source from app.src
+# Download, check integrity, uncompress and patch the source from app.srcv
 ynh_setup_source --dest_dir="$final_path"
 
 #=================================================

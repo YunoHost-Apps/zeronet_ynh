@@ -49,7 +49,7 @@ ynh_remove_systemd_config
 ynh_script_progression --message="Removing dependencies..."
 
 # Remove metapackage and its dependencies
-pip3 uninstall -y gevent-websocket msgpack-python gevent base58 merkletools rsa PySocks pyasn1 websocket_client gevent-ws coincurve maxminddb
+pip3 uninstall -y  merkletools PySocks pyasn1 coincurve maxminddb bencode
 ynh_remove_app_dependencies
 
 #=================================================
