@@ -14,7 +14,6 @@ source /usr/share/yunohost/helpers
 #=================================================
 
 ynh_clean_setup () {
-	### Remove this function if there's nothing to clean before calling the remove script.
 	true
 }
 # Exit if an error occurs during the execution of the script
@@ -30,6 +29,7 @@ password=$YNH_APP_ARG_PASSWORD
 
 app=$YNH_APP_INSTANCE_NAME
 datadir="/home/yunohost.app/${app}"
+
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
@@ -73,8 +73,14 @@ ynh_exec_warn_less yunohost firewall allow --no-upnp TCP $fs_port
 ynh_script_progression --message="Installing dependencies..."
 
 ynh_install_app_dependencies $pkg_dependencies
-pip3 install --upgrade pip
-pip3 install gevent-websocket msgpack-python gevent base58 merkletools rsa PySocks pyasn1 websocket_client gevent-ws coincurve maxminddb
+
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Configuring system user..."
+
+# Create a system user
+ynh_system_user_create --username=$app --home_dir=$final_path
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -85,6 +91,10 @@ ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$final_path"
 
+chmod 750 "$final_path"
+chmod -R o-rwx "$final_path"
+chown -R $app:$app "$final_path"
+
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
@@ -94,12 +104,31 @@ ynh_script_progression --message="Configuring NGINX web server..."
 ynh_add_nginx_config
 
 #=================================================
-# CREATE DEDICATED USER
+# SPECIFIC SETUP
 #=================================================
-ynh_script_progression --message="Configuring system user..."
+# BUILDING ZERONET
+#=================================================
+ynh_script_progression --message="Building zeronet..."
 
-# Create a system user
-ynh_system_user_create --username=$app --home_dir=$datadir -s
+pushd "$final_path"
+	pip3 install --upgrade pip
+	pip3 install -r requirements.txt
+popd
+
+#=================================================
+# CREATE DATA DIR
+#=================================================
+ynh_script_progression --message="Creating data directory..."
+
+mkdir -p $datadir/data
+mkdir -p $datadir/log
+
+chmod 750 "$datadir"
+chmod -R o-rwx "$datadir"
+chown -R $app:$app "$datadir"
+
+# Enable password authentication for Zeronet
+mv $final_path/plugins/disabled-UiPassword  $final_path/plugins/UiPassword
 
 #=================================================
 # SETUP SYSTEMD
@@ -110,26 +139,11 @@ ynh_script_progression --message="Configuring a systemd service..."
 ynh_add_systemd_config
 
 #=================================================
-# SETUP APPLICATION PERMISSIONS
-#=================================================
-
-# Enable password authentication for Zeronet
-mv $final_path/plugins/disabled-UiPassword  $final_path/plugins/UiPassword
-
-# Set right permissions
-mkdir -p $datadir/data
-mkdir -p $datadir/log
-chown -R $app: $final_path
-chown -R $app: $datadir
-
-#=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..."
 
-ynh_add_systemd_config --service="$app" --template="systemd.service" --others_var="fs_port port domain datadir password"
-
-yunohost service add $app --description "$app service" --log "$datadir/log/debug-last.log" --needs_exposed_ports "$fs_port"
+yunohost service add $app --description="$app service" --log="$datadir/log/debug-last.log" --needs_exposed_ports="$fs_port"
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -137,7 +151,7 @@ yunohost service add $app --description "$app service" --log "$datadir/log/debug
 ynh_script_progression --message="Starting a systemd service..."
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action="start" --log_path="$datadir/log/debug-last.log" --line_match="Ui.UiServer Web interface" --timeout=120
+ynh_systemd_action --service_name=$app --action="start" --log_path="systemd" --line_match="Ui.UiServer Web interface" --timeout=120
 
 #=================================================
 # SETUP SSOWAT

@@ -31,24 +31,6 @@ password=$(ynh_app_setting_get --app=$app --key=password)
 upgrade_type=$(ynh_check_app_version_changed)
 
 #=================================================
-# ENSURE DOWNWARD COMPATIBILITY
-#=================================================
-ynh_script_progression --message="Ensuring downward compatibility..."
-
-# If final_path doesn't exist, create it
-if [ -z "$final_path" ]; then
-	final_path=/var/www/$app
-	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
-fi
-
-# Cleaning legacy permissions
-if ynh_legacy_permissions_exists; then
-	ynh_legacy_permissions_delete_all
-
-	ynh_app_setting_delete --app=$app --key=is_public
-fi
-
-#=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
 ynh_script_progression --message="Backing up the app before upgrading (may take a while)..."
@@ -69,7 +51,33 @@ ynh_abort_if_errors
 #=================================================
 ynh_script_progression --message="Stopping a systemd service..."
 
-ynh_systemd_action --service_name=$app --action="stop" --log_path="$datadir/log/debug-last.log"
+ynh_systemd_action --service_name=$app --action="stop" --log_path="systemd"
+
+#=================================================
+# ENSURE DOWNWARD COMPATIBILITY
+#=================================================
+ynh_script_progression --message="Ensuring downward compatibility..."
+
+# If final_path doesn't exist, create it
+if [ -z "$final_path" ]; then
+	final_path=/var/www/$app
+	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+fi
+
+# Cleaning legacy permissions
+if ynh_legacy_permissions_exists; then
+	ynh_legacy_permissions_delete_all
+
+	ynh_app_setting_delete --app=$app --key=is_public
+fi
+
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Making sure dedicated system user exists..."
+
+# Create a dedicated user (if not existing)
+ynh_system_user_create --username=$app --home_dir=$final_path
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -80,9 +88,13 @@ then
 	ynh_script_progression --message="Upgrading source files..."
 
 	# Download, check integrity, uncompress and patch the source from app.src
-  ynh_secure_remove --file="$final_path"
+	ynh_secure_remove --file="$final_path"
 	ynh_setup_source --dest_dir="$final_path"
 fi
+
+chmod 750 "$final_path"
+chmod -R o-rwx "$final_path"
+chown -R $app:$app "$final_path"
 
 #=================================================
 # NGINX CONFIGURATION
@@ -98,16 +110,33 @@ ynh_add_nginx_config
 ynh_script_progression --message="Upgrading dependencies..."
 
 ynh_install_app_dependencies $pkg_dependencies
-pip3 install --upgrade pip
-pip3 install gevent-websocket msgpack-python gevent base58 merkletools rsa PySocks pyasn1 websocket_client gevent-ws coincurve maxminddb
 
 #=================================================
-# CREATE DEDICATED USER
+# SPECIFIC UPGRADE
 #=================================================
-ynh_script_progression --message="Making sure dedicated system user exists..."
+# BUILDING ZERONET
+#=================================================
+ynh_script_progression --message="Building zeronet..."
 
-# Create a dedicated user (if not existing)
-ynh_system_user_create --username=$app --home_dir=$datadir -s
+pushd "$final_path"
+	pip3 install --upgrade pip
+	pip3 install -r requirements.txt
+popd
+
+#=================================================
+# CREATE DATA DIR
+#=================================================
+ynh_script_progression --message="Creating data directory..."
+
+mkdir -p $datadir/data
+mkdir -p $datadir/log
+
+chmod 750 "$datadir"
+chmod -R o-rwx "$datadir"
+chown -R $app:$app "$datadir"
+
+# Enable password authentication for Zeronet
+mv $final_path/plugins/disabled-UiPassword  $final_path/plugins/UiPassword
 
 #=================================================
 # SETUP SYSTEMD
@@ -120,30 +149,18 @@ ynh_add_systemd_config
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
-# SECURE FILES AND DIRECTORIES
-#=================================================
-
-# Enable password authentication for Zeronet
-mv $final_path/plugins/disabled-UiPassword  $final_path/plugins/UiPassword
-
-# Set permissions on app files
-chown -R $app: $final_path
-chown -R $app: $datadir
-
-#=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..."
 
-ynh_add_systemd_config --service="$app" --template="systemd.service" --others_var="fs_port port domain datadir password"
-yunohost service add $app --description "$app service" --log "$datadir/log/debug-last.log" --needs_exposed_ports "$fs_port"
+yunohost service add $app --description="$app service" --log="$datadir/log/debug-last.log" --needs_exposed_ports="$fs_port"
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
 ynh_script_progression --message="Starting a systemd service..."
 
-ynh_systemd_action --service_name=$app --action="start" --log_path="$datadir/log/debug-last.log" --line_match="Ui.UiServer Web interface" --timeout=120
+ynh_systemd_action --service_name=$app --action="start" --log_path="systemd" --line_match="Ui.UiServer Web interface" --timeout=120
 
 #=================================================
 # RELOAD NGINX
