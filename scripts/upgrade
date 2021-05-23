@@ -99,7 +99,7 @@ ynh_script_progression --message="Upgrading dependencies..."
 
 ynh_install_app_dependencies $pkg_dependencies
 pip3 install --upgrade pip
-pip3 install  merkletools PySocks pyasn1 websocket_client gevent-ws coincurve bencode
+pip3 install  merkletools PySocks websocket_client gevent-ws coincurve bencode
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
