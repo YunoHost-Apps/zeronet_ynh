@@ -73,8 +73,6 @@ ynh_exec_warn_less yunohost firewall allow --no-upnp TCP $fs_port
 ynh_script_progression --message="Installing dependencies..."
 
 ynh_install_app_dependencies $pkg_dependencies
-pip3 install --upgrade pip
-pip3 install gevent-websocket msgpack-python gevent base58 merkletools rsa PySocks pyasn1 websocket_client gevent-ws coincurve maxminddb
 
 #=================================================
 # CREATE DEDICATED USER
@@ -107,6 +105,16 @@ ynh_add_nginx_config
 
 #=================================================
 # SPECIFIC SETUP
+#=================================================
+# BUILDING ZERONET
+#=================================================
+ynh_script_progression --message="Building zeronet..."
+
+pushd "$final_path"
+	pip3 install --upgrade pip
+	pip3 install -r requirements.txt
+popd
+
 #=================================================
 # CREATE DATA DIR
 #=================================================
@@ -143,7 +151,7 @@ yunohost service add $app --description="$app service" --log="$datadir/log/debug
 ynh_script_progression --message="Starting a systemd service..."
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action="start" --log_path="$datadir/log/debug-last.log" --line_match="Ui.UiServer Web interface" --timeout=120
+ynh_systemd_action --service_name=$app --action="start" --log_path="systemd" --line_match="Ui.UiServer Web interface" --timeout=120
 
 #=================================================
 # SETUP SSOWAT
