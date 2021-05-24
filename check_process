@@ -10,12 +10,13 @@
 		setup_private=0
 		setup_public=0
 		upgrade=1
+		# 0.7.1~ynh1
+		upgrade=1	from_commit=628e89b0536a3c1ff7e5f9d903527b670690b336
 		backup_restore=1
 		multi_instance=1
 ;;; Options
 Email=
 Notification=none
 ;;; Upgrade options
-    ; commit=CommitHash
-        name=Name and date of the commit.
-        manifest_arg=domain=DOMAIN&path=PATH&admin=USER&is_public=1&password=pass&
+	; commit=628e89b0536a3c1ff7e5f9d903527b670690b336
+		name=0.7.1~ynh1

@@ -6,7 +6,7 @@
     "en": "Decentralized websites using Bitcoin crypto and BitTorrent network",
     "fr": "Sites Web décentralisés utilisant la crypto Bitcoin et le réseau BitTorrent"
   },
-  "version": "0.7.1~ynh1",
+  "version": "2021-01-25~ynh1",
   "url": "https://zeronet.io",
   "license": "AGPL-3.0",
   "maintainer": {

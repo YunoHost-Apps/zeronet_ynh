@@ -11,7 +11,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 ## Overview
 ZeroNet allows you to publish static and dynamic websites on a distributed web platform using Bitcoin crypto and the BitTorrent network.
 
-**Shipped version:** 0.7.1
+**Shipped version:** 2021-01-25
 
 ## Screenshots
 
