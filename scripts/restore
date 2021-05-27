@@ -87,8 +87,9 @@ ynh_install_app_dependencies $pkg_dependencies
 ynh_script_progression --message="Building zeronet..."
 
 pushd "$final_path"
-	pip3 install --upgrade pip
-	pip3 install -r requirements.txt
+	python3 -m venv venv
+	venv/bin/pip install --upgrade pip
+	venv/bin/pip install -r requirements.txt
 popd
 
 #=================================================

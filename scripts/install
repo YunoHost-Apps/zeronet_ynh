@@ -111,8 +111,9 @@ ynh_add_nginx_config
 ynh_script_progression --message="Building zeronet..."
 
 pushd "$final_path"
-	pip3 install --upgrade pip
-	pip3 install -r requirements.txt
+	python3 -m venv venv
+	venv/bin/pip install --upgrade pip
+	venv/bin/pip install -r requirements.txt
 popd
 
 #=================================================
@@ -158,7 +159,7 @@ ynh_systemd_action --service_name=$app --action="start" --log_path="systemd" --l
 #=================================================
 ynh_script_progression --message="Configuring permissions..."
 
-# Allow the app to be public
+# Everyone can access the app.
 ynh_permission_update --permission="main" --add="visitors"
 
 #=================================================
