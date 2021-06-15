@@ -69,7 +69,7 @@ fi
 #=================================================
 ynh_script_progression --message="Stopping a systemd service..."
 
-ynh_systemd_action --service_name=$app --action="start" --log_path="$datadir/log/debug-last.log" --line_match="Ui.UiServer Web interface" --timeout=120
+ynh_systemd_action --service_name=$app --action="start" --log_path="systemd" --line_match="Ui.UiServer Web interface" --timeout=120
 
 #=================================================
 # MODIFY URL IN NGINX CONF
@@ -113,7 +113,7 @@ ynh_replace_string --match_string="$old_domain" --replace_string="$new_domain" -
 # START SYSTEMD SERVICE
 #=================================================
 
-ynh_systemd_action --service_name=$app --action="start" --log_path="$datadir/log/debug-last.log"
+ynh_systemd_action --service_name=$app --action="start" --log_path="systemd" --line_match="Ui.UiServer Web interface" --timeout=120
 
 #=================================================
 # RELOAD NGINX
