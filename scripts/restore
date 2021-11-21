@@ -39,8 +39,6 @@ datadir=$(ynh_app_setting_get --app=$app --key=datadir)
 #=================================================
 ynh_script_progression --message="Validating restoration parameters..."
 
-ynh_webpath_available --domain=$domain --path_url=$path_url \
-	|| ynh_die --message="Path not available: ${domain}${path_url}"
 test ! -d $final_path \
 	|| ynh_die --message="There is already a directory: $final_path "
 
@@ -98,9 +96,10 @@ popd
 ynh_script_progression --message="Restoring various files..."
 
 # Restore permissions on app files
-ynh_restore_file --origin_path="$datadir"
+ynh_restore_file --origin_path="$datadir" --not_mandatory
 
 mkdir -p "$datadir"
+
 chmod 750 "$datadir"
 chmod -R o-rwx "$datadir"
 chown -R $app:$app "$datadir"
