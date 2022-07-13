@@ -14,7 +14,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 
 ynh_clean_setup () {
-	true
+	ynh_clean_check_starting
 }
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
@@ -28,7 +28,6 @@ path_url="/"
 password=$YNH_APP_ARG_PASSWORD
 
 app=$YNH_APP_INSTANCE_NAME
-datadir="/home/yunohost.app/${app}"
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
@@ -48,7 +47,6 @@ ynh_script_progression --message="Storing installation settings..."
 
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
-ynh_app_setting_set --app=$app --key=datadir --value=$datadir
 ynh_app_setting_set --app=$app --key=password --value=$password
 
 #=================================================
@@ -60,11 +58,12 @@ ynh_script_progression --message="Finding an available port..."
 
 # Find an available port
 port=$(ynh_find_port --port=43110)
-fs_port=$(ynh_find_port --port=15441)
 ynh_app_setting_set --app=$app --key=port --value=$port
+fs_port=$(ynh_find_port --port=15441)
 ynh_app_setting_set --app=$app --key=fs_port --value=$fs_port
 
 # Open the port
+ynh_script_progression --message="Configuring firewall..."
 ynh_exec_warn_less yunohost firewall allow --no-upnp TCP $fs_port
 
 #=================================================
@@ -80,7 +79,7 @@ ynh_install_app_dependencies $pkg_dependencies
 ynh_script_progression --message="Configuring system user..."
 
 # Create a system user
-ynh_system_user_create --username=$app --home_dir=$final_path
+ynh_system_user_create --username=$app --home_dir="$final_path"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -117,10 +116,12 @@ pushd "$final_path"
 popd
 
 #=================================================
-# CREATE DATA DIR
+# CREATE DATA DIRECTORY
 #=================================================
-ynh_script_progression --message="Creating data directory..."
+ynh_script_progression --message="Creating a data directory..."
 
+datadir=/home/yunohost.app/$app
+ynh_app_setting_set --app=$app --key=datadir --value=$datadir
 mkdir -p $datadir/data
 mkdir -p $datadir/log
 

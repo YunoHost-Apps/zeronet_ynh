@@ -1,36 +1,42 @@
 {
-  "name": "ZeroNet",
-  "id": "zeronet",
-  "packaging_format": 1,
-  "description": {
-    "en": "Decentralized websites using Bitcoin crypto and BitTorrent network",
-    "fr": "Sites Web décentralisés utilisant la crypto Bitcoin et le réseau BitTorrent"
-  },
-  "version": "2021.01.25~ynh1",
-  "url": "https://zeronet.io",
-  "license": "AGPL-3.0",
-  "maintainer": {
-    "name": "whypsi",
-    "email": "whypsi@riseup.net"
-  },
-  "requirements": {
-    "yunohost": ">= 4.3.0"
-  },
-  "multi_instance": true,
-  "services": [
-    "nginx"
+    "name": "ZeroNet",
+    "id": "zeronet",
+    "packaging_format": 1,
+    "description": {
+        "en": "Decentralized websites using Bitcoin crypto and BitTorrent network",
+        "fr": "Sites Web décentralisés utilisant la crypto Bitcoin et le réseau BitTorrent"
+    },
+    "version": "2021.01.25~ynh1",
+    "url": "https://zeronet.io",
+    "upstream": {
+        "license": "AGPL-3.0",
+        "website": "https://zeronet.io",
+        "admindoc": "https://zeronet.io/docs/",
+        "code": "https://github.com/HelloZeroNet/ZeroNet"
+    },
+    "license": "AGPL-3.0",
+    "maintainer": {
+        "name": "whypsi",
+        "email": "whypsi@riseup.net"
+    },
+    "requirements": {
+        "yunohost": ">= 4.3.0"
+    },
+    "multi_instance": true,
+    "services": [
+        "nginx"
     ],
     "arguments": {
-      "install" : [
-        {
-          "name": "domain",
-          "type": "domain"
-        },
-        {
-          "name": "password",
-          "type": "password",
-          "optional": true
-        }
-      ]
+        "install": [
+            {
+                "name": "domain",
+                "type": "domain"
+            },
+            {
+                "name": "password",
+                "type": "password",
+                "optional": true
+            }
+        ]
     }
 }
