@@ -42,10 +42,10 @@ ynh_remove_nginx_config
 # CLOSE A PORT
 #=================================================
 
-if yunohost firewall list | grep -q "\- $fs_port$"
+if yunohost firewall list | grep -q "\- $port_fs$"
 then
 	ynh_script_progression --message="Closing port $port..."
-	ynh_exec_warn_less yunohost firewall disallow TCP $fs_port
+	ynh_exec_warn_less yunohost firewall disallow TCP $port_fs
 fi
 
 #=================================================
