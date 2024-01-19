@@ -33,12 +33,13 @@ ynh_change_url_nginx_config
 ynh_script_progression --message="Integrating service in YunoHost..."
 
 ynh_replace_string --match_string="$old_domain" --replace_string="$new_domain" --target_file="/etc/systemd/system/${app}.service"
+systemctl daemon-reload
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
 
-ynh_systemd_action --service_name=$app --action="start" --log_path="systemd" --line_match="Ui.UiServer Web interface" --timeout=120
+ynh_systemd_action --service_name="$app" --action="start" --log_path="systemd" --line_match="Ui.UiServer Web interface" --timeout=120
 
 #=================================================
 # END OF SCRIPT
