@@ -12,6 +12,13 @@ source /usr/share/yunohost/helpers
 path="/"
 
 #=================================================
+# INITIALIZE AND STORE SETTINGS
+#=================================================
+
+# Password are not saved by default, but here required for upgrade
+ynh_app_setting_set --app="$app" --key=password --value="$password"
+
+#=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression --message="Setting up source files..."
