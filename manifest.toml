@@ -36,6 +36,10 @@ ram.runtime = "50M" # FIXME: replace with an **estimate** minimum ram requiremen
     type = "password"
     optional = true
 
+    [install.init_main_permission]
+    type = "group"
+    default = "visitors"
+
 [resources]
     [resources.sources.main]
     url = "https://github.com/HelloZeroNet/ZeroNet/archive/454c0b2e7e000fda7000cba49027541fbf327b96.tar.gz"
