@@ -19,7 +19,7 @@ ynh_restore_file --origin_path="$install_dir"
 
 chmod 750 "$install_dir"
 chmod -R o-rwx "$install_dir"
-chown -R $app:$app "$install_dir"
+chown -R "$app:$app" "$install_dir"
 
 #=================================================
 # RESTORE THE DATA DIRECTORY
@@ -30,54 +30,32 @@ ynh_restore_file --origin_path="$data_dir" --not_mandatory
 
 chmod 750 "$data_dir"
 chmod -R o-rwx "$data_dir"
-chown -R $app:$app "$data_dir"
-
-#=================================================
-# RESTORE THE NGINX CONFIGURATION
-#=================================================
-ynh_script_progression --message="Restoring the NGINX web server configuration..."
-
-ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
+chown -R "$app:$app" "$data_dir"
 
 #=================================================
 # BUILDING ZERONET
 #=================================================
-ynh_script_progression --message="Building zeronet..."
+ynh_script_progression --message="Updating virtualenv..."
 
-pushd "$install_dir"
-	python3 -m venv venv
-	venv/bin/pip install --upgrade pip
-	venv/bin/pip install -r requirements.txt
-popd
+ynh_exec_as "$app" python3 -m venv --upgrade "$install_dir/venv"
 
 #=================================================
-# RESTORE SYSTEMD
+# RESTORE SYSTEM CONFIGURATIONS
 #=================================================
-ynh_script_progression --message="Restoring the systemd configuration..."
+ynh_script_progression --message="Restoring system configurations related to $app..." --weight=1
+
+ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 
 ynh_restore_file --origin_path="/etc/systemd/system/$app.service"
-systemctl enable $app.service --quiet
+systemctl enable "$app.service" --quiet
+yunohost service add "$app" --description="$app service" --log="$data_dir/log/debug-last.log" --needs_exposed_ports="$port_fs"
 
 #=================================================
-# INTEGRATE SERVICE IN YUNOHOST
+# RELOAD NGINX AND PHP-FPM OR THE APP SERVICE
 #=================================================
-ynh_script_progression --message="Integrating service in YunoHost..."
+ynh_script_progression --message="Reloading NGINX web server and $app's service..." --weight=1
 
-yunohost service add $app --description="$app service" --log="$data_dir/log/debug-last.log" --needs_exposed_ports="$port_fs"
-
-#=================================================
-# START SYSTEMD SERVICE
-#=================================================
-ynh_script_progression --message="Starting a systemd service..."
-
-ynh_systemd_action --service_name=$app --action="start" --log_path="systemd" --line_match="Ui.UiServer Web interface" --timeout=120
-
-#=================================================
-# GENERIC FINALIZATION
-#=================================================
-# RELOAD NGINX
-#=================================================
-ynh_script_progression --message="Reloading NGINX web server..."
+ynh_systemd_action --service_name="$app" --action="start" --log_path="/var/log/$app/$app.log"
 
 ynh_systemd_action --service_name=nginx --action=reload
 
