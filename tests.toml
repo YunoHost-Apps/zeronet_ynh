@@ -9,3 +9,4 @@ test_format = 1
     [default.test_upgrade_from.628e89b0536a3c1ff7e5f9d903527b670690b336]
     name = "0.7.1~ynh1"
     args.password = "secret123"
+    args.domain = "sub.domain.tld"
