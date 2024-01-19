@@ -7,7 +7,7 @@ name = "ZeroNet"
 description.en = "Decentralized websites using Bitcoin crypto and BitTorrent network"
 description.fr = "Sites Web décentralisés utilisant la crypto Bitcoin et le réseau BitTorrent"
 
-version = "2021.01.25~ynh1"
+version = "2021.01.25~ynh2"
 
 maintainers = ["whypsi"]
 
