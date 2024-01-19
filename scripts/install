@@ -11,29 +11,21 @@ source /usr/share/yunohost/helpers
 
 path="/"
 
-# Open the port
-ynh_script_progression --message="Configuring firewall..."
-ynh_exec_warn_less yunohost firewall allow --no-upnp TCP $fs_port
-
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression --message="Setting up source files..."
 
 # Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source --dest_dir="$install_dir"
+ynh_setup_source --dest_dir="$install_dir/source"
 
 chmod 750 "$install_dir"
 chmod -R o-rwx "$install_dir"
-chown -R $app:$app "$install_dir"
+chown -R "$app:$app" "$install_dir"
 
-#=================================================
-# NGINX CONFIGURATION
-#=================================================
-ynh_script_progression --message="Configuring NGINX web server..."
-
-# Create a dedicated NGINX config
-ynh_add_nginx_config
+chmod 750 "$data_dir"
+chmod -R o-rwx "$data_dir"
+chown -R "$app:$app" "$data_dir"
 
 #=================================================
 # SPECIFIC SETUP
@@ -42,38 +34,24 @@ ynh_add_nginx_config
 #=================================================
 ynh_script_progression --message="Building zeronet..."
 
-pushd "$install_dir"
-	ynh_exec_as "$app" python3 -m venv venv
-	ynh_exec_as "$app" venv/bin/pip install --upgrade pip
-	ynh_exec_as "$app" venv/bin/pip install -r requirements.txt
-popd
+ynh_exec_as "$app" python3 -m venv --upgrade "$install_dir/venv"
+ynh_exec_as "$app" "$install_dir/venv/bin/python3" -m pip install --upgrade pip
+ynh_exec_as "$app" "$install_dir/venv/bin/python3" -m pip install -r "$install_dir/source/requirements.txt"
 
 # Enable password authentication for Zeronet
-mv "$install_dir/plugins/disabled-UiPassword"  "$install_dir/plugins/UiPassword"
+mv "$install_dir/source/plugins/disabled-UiPassword"  "$install_dir/source/plugins/UiPassword"
 
 #=================================================
-# CREATE DATA DIRECTORY
+# SYSTEM CONFIGURATION
 #=================================================
-ynh_script_progression --message="Creating a data directory..."
+ynh_script_progression --message="Adding system configurations related to $app..." --weight=1
 
-chmod 750 "$data_dir"
-chmod -R o-rwx "$data_dir"
-chown -R $app:$app "$data_dir"
-
-#=================================================
-# SETUP SYSTEMD
-#=================================================
-ynh_script_progression --message="Configuring a systemd service..."
+# Create a dedicated NGINX config
+ynh_add_nginx_config
 
 # Create a dedicated systemd config
 ynh_add_systemd_config
-
-#=================================================
-# INTEGRATE SERVICE IN YUNOHOST
-#=================================================
-ynh_script_progression --message="Integrating service in YunoHost..."
-
-yunohost service add $app --description="$app service" --log="$data_dir/log/debug-last.log" --needs_exposed_ports="$port_fs"
+yunohost service add "$app" --description="$app service" --log="$data_dir/log/debug-last.log" --needs_exposed_ports="$port_fs"
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -81,7 +59,7 @@ yunohost service add $app --description="$app service" --log="$data_dir/log/debu
 ynh_script_progression --message="Starting a systemd service..."
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action="start" --log_path="systemd" --line_match="Ui.UiServer Web interface" --timeout=120
+ynh_systemd_action --service_name="$app" --action="start" --log_path="systemd" --line_match="Ui.UiServer Web interface" --timeout=120
 
 #=================================================
 # END OF SCRIPT
