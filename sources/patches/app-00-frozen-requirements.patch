@@ -1,0 +1,36 @@
+diff --git a/requirements.txt b/requirements.txt
+index b3df57e..9870c84 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -1,13 +1,18 @@
+-gevent==1.4.0; python_version <= "3.6"
+-greenlet==0.4.16; python_version <= "3.6"
+-gevent>=20.9.0; python_version >= "3.7"
+-msgpack>=0.4.4
+-base58
+-merkletools
+-rsa
+-PySocks>=1.6.8
+-pyasn1
+-websocket_client
+-gevent-ws
+-coincurve
+-maxminddb
++asn1crypto==1.5.1
++base58==2.1.1
++cffi==1.15.1
++coincurve==18.0.0
++gevent==23.9.1
++gevent-ws==2.1.0
++greenlet==2.0.2
++maxminddb==2.4.0
++merkletools==1.0.3
++msgpack==1.0.6
++pipdeptree==2.13.0
++pyasn1==0.5.0
++pycparser==2.21
++PySocks==1.7.1
++rsa==4.9
++websocket-client==1.6.3
++zope.event==5.0
++zope.interface==6.0

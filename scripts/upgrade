@@ -48,7 +48,7 @@ ynh_script_progression --message="Building zeronet..."
 
 ynh_exec_as "$app" python3 -m venv --upgrade "$install_dir/venv"
 ynh_exec_as "$app" "$install_dir/venv/bin/python3" -m pip install --upgrade pip
-ynh_exec_as "$app" "$install_dir/venv/bin/python3" -m pip install -r "$install_dir/source/requirements.txt"
+ynh_exec_as "$app" "$install_dir/venv/bin/python3" -m pip install -r "$install_dir/source/requirements.txt" --no-deps
 
 # Enable password authentication for Zeronet
 mv "$install_dir/source/plugins/disabled-UiPassword"  "$install_dir/source/plugins/UiPassword"
