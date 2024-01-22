@@ -1,0 +1,17 @@
+#:schema https://raw.githubusercontent.com/YunoHost/apps/master/schemas/tests.v1.schema.json
+
+test_format = 1
+
+[default]
+
+    args.password = "secret123"
+
+    [default.test_upgrade_from.cae2b504c1a1f6bd26a28c3d01e7bbe0f792d507]
+    name = "2021.01.25~ynh1"
+    args.password = "secret123"
+    args.domain = "sub.domain.tld"
+
+    [default.test_upgrade_from.a6128b00bc9999ec3b0591a148225fe8ce8bcfc3]
+    name = "Last Packagingv1 version"
+    args.password = "secret123"
+    args.domain = "sub.domain.tld"
